@@ -45,16 +45,14 @@ About the image
 
 Cloning the repository
 ======================
-
 ::
     $ git clone --recursive https://github.com/Outernet-Project/orx-rpi.git
 
 Compiling the toolchain
 =======================
 
-The toolchain confiuration supplied with this code 
+The toolchain confiuration supplied with this code::
 
-::
     $ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.20.0.tar.bz2
     $ tar xvf crosstool-ng-1.20.0.tar.bz2
     $ cd crosstool-ng-1.12.0
