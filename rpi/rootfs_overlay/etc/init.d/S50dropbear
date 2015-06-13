@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# Starts dropbear sshd.
+#
+
+KEYDIR=/opt/orx/dropbear
+KEYDSS=$KEYDIR/dss_host_key
+KEYRSA=$KEYDIR/rsa_host_key
+DROPBEAR_PID=/var/run/dropbear.pid
+DAEMON=/usr/sbin/dropbear
+
+[ -f /usr/bin/dropbearkey ] || exit 0
+
+keygen() {
+    mkdir -p $KEYDIR
+    chmod 700 $KEYDIR
+    if [ ! -f $KEYDSS ]
+    then
+        echo -n "Generating DSS host key..."
+        dropbearkey -t dss -f $KEYDSS > /dev/null 2>&1
+        echo OK
+    fi
+    if [ ! -f $KEYRSA ]
+    then
+        echo -n "Generating RSA host key..."
+        dropbearkey -t rsa -f $KEYRSA > /dev/null 2>&1
+        echo OK
+    fi
+}
+
+start() {
+    keygen
+	echo -n "Starting dropbear sshd: "
+	umask 077
+	start-stop-daemon -S -q -p $DROPBEAR_PID -x $DAEMON \
+        -- -w -d $KEYDSS -r $KEYRSA
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+stop() {
+	echo -n "Stopping dropbear sshd: "
+	start-stop-daemon -K -q -p $DROPBEAR_PID -x $DAEMON
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart|reload)
+  	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

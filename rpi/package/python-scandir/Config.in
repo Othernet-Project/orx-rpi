@@ -1,0 +1,11 @@
+config BR2_PACKAGE_PYTHON_SCANDIR
+	bool "python-scandir"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+      scandir is a module which provides a generator version of os.listdir()
+      that also exposes the extra file information the operating system returns
+      when you iterate a directory. scandir also provides a much faster version
+      of os.walk(), because it can use the extra file information exposed by
+      the scandir() function.
+
+      https://github.com/benhoyt/scandir

@@ -1,0 +1,121 @@
+diff --git a/librarian/librarian.ini b/librarian/librarian.ini
+index 731f5c0..4b5e9bc 100644
+--- a/librarian/librarian.ini
++++ b/librarian/librarian.ini
+@@ -14,14 +14,14 @@ bind = 0.0.0.0
+ 
+ # IP address range assigned by DHCP to clients
+ ap_client_ip_range =
+-    192.168.0.2
+-    192.168.0.255
++    10.0.0.2
++    10.0.0.254
+ 
+ # Root url of librarian
+ root_url = http://librarian.outernet
+ 
+ # Whether to enable debug mode and reloader
+-debug = yes
++debug = no
+ 
+ # Whether extra logging will be output to STDOUT (slows the server down)
+ log = no
+@@ -38,10 +38,10 @@ backend = embedded.archive.EmbeddedArchive
+ [platform]
+ 
+ # Platform name, such as pillar, web, etc.
+-name =
++name = ORxPi
+ 
+ # Location of the file containing the platform version number
+-version_file =
++version_file = /etc/version
+ 
+ [logging]
+ # This section deals with logging section. Most of the settings are related to
+@@ -59,17 +59,17 @@ date_format = %Y-%m-%d %H:%M:%S (%z)
+ size = 10MB
+ 
+ # Number of backups to keep
+-backups = 4
++backups = 2
+ 
+ # Output
+ output = /var/log/librarian.log
+ 
+ # Syslog path
+-syslog = /var/log/syslog
++syslog = /var/log/messages
+ 
+ [setup]
+ # Store setup data in this file
+-file = /var/lib/outernet/librarian.json
++file = /opt/orx/librarian.json
+ 
+ [database]
+ # Names of all databases
+@@ -78,26 +78,26 @@ names =
+     sessions
+ 
+ # Path to database directory
+-path = /var/lib/outernet
++path = /mnt/data/db
+ 
+ [content]
+ # Path for temporary content storage
+-spooldir = /var/spool/downloads/content
++spooldir = /mnt/data/downloads/content
+ 
+ # Path for file downloads
+-filedir = /var/spool/downloads/files
++filedir = /mnt/data/downloads/files
+ 
+ # Path for the apps directory
+-appdir = /var/spool/downloads/files/apps
++appdir = /mnt/data/downloads/files/apps
+ 
+ # Path to a directory where zipballs that are being extracted are symlinked
+-unpackdir = /srv/zipballs/.unpack
++unpackdir = /mnt/data/library/.unpack
+ 
+ # Path to content directory (where archive zipballs are stored)
+-contentdir = /srv/zipballs
++contentdir = /mnt/data/library
+ 
+ # Path to cover images
+-covers = /srv/zipballs/.covers
++covers = /mnt/data/library/.covers
+ 
+ # Extension of the signed content
+ extension = sig
+@@ -148,7 +148,7 @@ servers =
+ 
+ [mako]
+ # Path where to put generated modules from mako templates (improves performance drastically)
+-module_directory = /tmp/mako_modules
++module_directory = /var/run/mako
+ 
+ [storage]
+ # Minimum space needed on storage at all times. Values can be specified without
+@@ -169,10 +169,10 @@ license = yes
+ logs = yes
+ 
+ # Show link to TVHeadend
+-tvheadend = yes
++tvheadend = no
+ 
+ # Control tuner using ONDD (disable TVHeadend when enabling this)
+-ondd = no
++ondd = yes
+ 
+ # Backup and rebuild content database
+ dbmanage = yes
+@@ -195,7 +195,7 @@ backups = database_backups
+ # Order in which plugins should be rendered
+ plugins =
+     diskspace
+-    tvheadend
++    ondd
+     dbmanage
+     netinterfaces
+     logs

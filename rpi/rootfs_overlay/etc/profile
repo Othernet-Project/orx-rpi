@@ -1,0 +1,29 @@
+# ~/.bashrc: executed by bash(1) for non-login interactive shells.
+
+export PATH=\
+/bin:\
+/sbin:\
+/usr/bin:\
+/usr/sbin:\
+/usr/local/bin
+
+# If running interactively, then:
+if [ "$PS1" ]; then
+    export PS1="$(cat /etc/platform) v$(cat /etc/version) | \u@\h:\w> "
+    export USER=`id -un`
+    export LOGNAME=$USER
+    export HOSTNAME=`/bin/hostname`
+    export HISTSIZE=1000
+    export HISTFILESIZE=1000
+    export PAGER='/bin/more '
+    export EDITOR='/bin/vi'
+    export INPUTRC=/etc/inputrc
+    export DMALLOC_OPTIONS=debug=0x34f47d83,inter=100,log=logfile
+fi;
+
+# Source configuration files from /etc/profile.d
+for i in /etc/profile.d/*.sh ; do
+    if [ -r "$i" ]; then
+        . $i
+    fi
+done

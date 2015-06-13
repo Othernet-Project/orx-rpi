@@ -1,0 +1,32 @@
+#!/bin/sh
+
+DAEMON=/usr/sbin/hostapd
+HOSTAPD_CONF=/opt/orx/hostapd.conf
+HOSTAPD_PID=/var/run/hostapd.run
+
+[ -x /usr/sbin/hostapd ] || exit 0
+[ -f $HOSTAPD_CONF ] || exit 0
+
+case "$1" in
+    start)
+        echo -n "Starting hostapd: "
+        start-stop-daemon -S -q -p $HOSTAPD_PID -x $DAEMON \
+            -- -B -P $HOSTAPD_PID $HOSTAPD_CONF
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+        ;;
+    stop)
+        echo -n "Stopping hostapd: "
+        start-stop-daemon -K -q -p $HOSTAPD_PID -x $DAEMON
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+        ;;
+    restart|reload)
+        $0 stop
+        sleep 2
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0

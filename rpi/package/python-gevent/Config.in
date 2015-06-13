@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PYTHON_GEVENT
+	bool "python-gevent"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_LIBEV
+	select BR2_PACKAGE_PYTHON_GREENLET
+	help
+	  gevent is a coroutine-based Python networking library that uses greenlet
+	  to provide a high-level synchronous API on top of the libev event loop.
+
+	  http://www.gevent.org/

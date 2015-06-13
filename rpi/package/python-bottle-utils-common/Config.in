@@ -1,0 +1,11 @@
+config BR2_PACKAGE_PYTHON_BOTTLE_UTILS_COMMON
+	bool "python-bottle-utils-common"
+	depends on BR2_PACKAGE_PYTHON_BOTTLE
+	select BR2_PACKAGE_PYTHON_DATEUTIL
+	help
+	  Bottle Utils is a collection of loosely related packages for
+	  developing web applications using Bottle web framework. This
+	  package contains the common utilities shared by some of the
+	  Bottle Utils packages.
+
+	  http://outernet-project.github.io/bottle-utils/

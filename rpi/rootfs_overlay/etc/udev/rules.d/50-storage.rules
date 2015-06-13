@@ -1,0 +1,1 @@
+ACTION=="add", KERNEL=="sd[a-z]*", RUN+="/sbin/hotplug.scsi"

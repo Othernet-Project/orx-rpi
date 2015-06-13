@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PYTHON_GREENLET
+	bool "python-greenlet"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  The greenlet package is a spin-off of Stackless, a version of
+	  CPython that supports micro-threads called "tasklets". Tasklets
+	  run pseudo-concurrently (typically in a single or a few OS-level
+	  threads) and are synchronized with data exchanges on "channels".
+
+	  https://github.com/python-greenlet/greenlet

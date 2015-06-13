@@ -1,0 +1,8 @@
+diff --git a/librarian/__init__.py b/librarian/__init__.py
+index 2f5ea2d..29c9c60 100644
+--- a/librarian/__init__.py
++++ b/librarian/__init__.py
+@@ -1,2 +1,2 @@
+-__version__ = '0.2'
++__version__ = '0.2+orxpi.0'
+ __author__ = 'Outernet Inc <branko@outernet.is>'

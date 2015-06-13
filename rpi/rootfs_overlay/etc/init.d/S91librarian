@@ -1,0 +1,37 @@
+#!/bin/sh
+
+CONF_PATH=/opt/orx/librarian.ini
+DAEMON="python -m librarian.app"
+LIBRARIAN_PID=/var/run/librarian.pid
+
+case "$1" in
+    start)
+        [ ! -f $LIBRARIAN_PID ] || exit 0
+        echo -n "Starting librarian: "
+        $DAEMON > /dev/null 2>&1 &
+        if [ $? ]; then
+            echo $! > $LIBRARIAN_PID
+            echo "OK"
+        else
+            echo "FAILED"
+        fi
+        ;;
+    stop)
+        if [ -f $LIBRARIAN_PID ] ; then
+            echo -n "Stopping librarian: "
+            kill $(cat $LIBRARIAN_PID)
+            rm $LIBRARIAN_PID
+            echo "OK"
+        fi
+        ;;
+    restart|reload)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload}"
+        exit 1
+esac
+
+exit $?

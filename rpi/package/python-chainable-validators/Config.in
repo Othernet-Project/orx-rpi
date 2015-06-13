@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_CHAINABLE_VALIDATORS
+	bool "python-chainable-validators"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  Library for writing chainable validation functions.
+
+	  https://github.com/Outernet-Project/chainable-validators

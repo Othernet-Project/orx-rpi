@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PYTHON_MAKO
+	bool "python-mako"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_MARKUPSAFE
+	help
+	  Mako is a template library written in Python. It provides a
+	  familiar, non-XML syntax which compiles into Python modules
+	  for maximum performance.
+
+	  http://www.makotemplates.org/

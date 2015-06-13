@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_BOTTLE_FDSEND
+	bool "python-bottle-fdsend"
+	depends on BR2_PACKAGE_PYTHON_BOTTLE
+	help
+	  This package implements functions for constructing bottle's
+	  HTTPResponse objects from file handles.
+
+	  https://github.com/Outernet-Project/bottle-fdsend

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+IFPLUGD_IFACE=eth0
+IFPLUGD_PID=/var/run/ifplugd.${IFPLUGD_IFACE}.pid
+IFPLUGD_ACT=/etc/ifplugd.action
+DAEMON=/usr/sbin/ifplugd
+
+case "$1" in
+    start)
+        echo -n "Starting ifplugd: "
+        start-stop-daemon -S -q -p $IFPLUGD_PID -x $DAEMON \
+            -- -r $IFPLUGD_ACT -i $IFPLUGD_IFACE
+        [ $0 = 0 ] && echo OK || echo FAIL
+        ;;
+
+    stop)
+        echo -n "Stopping ifplugd: "
+        start-stop-daemon -K -q -p $IFPLUGD_PID -x $DAEMON
+        [ $0 = 0 ] && echo OK || echo FAIL
+        ;;
+
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0

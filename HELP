@@ -1,0 +1,53 @@
+Targets marked with * require superuser privileges
+
+The following make targets are defined
+
+version:
+    Print build version
+
+build:
+    Create the kernel image with built-in initramfs
+
+image:*
+    Create SD card image file
+
+gzimage:
+    Create gzipped SD card image file and MD5 checksum
+    (This target should be called after image target)
+
+zipimage:
+    Create zipped SD card image file and MD5 checksum
+    (This target should be called after image target but before gzimage)
+
+sdcard:*
+    Copy image to SD card using dd
+
+menuconfig:
+    Buildroot configuration
+
+linux-menuconfig:
+    Kernel configuration
+
+busybox-menuconfig:
+    BusyBox configuration
+
+saveconfig:
+    Save all configuration
+
+config:
+    Restore default config
+
+help:
+    Display this text
+
+clean-linux:
+    Clean the linux kernel build (to force rebuild)
+
+clean-librarian:
+    Clean Librarian build (to force rebuild)
+
+clean-build:
+    Remove kernel image and image file(s)
+
+clean:
+    Full clean

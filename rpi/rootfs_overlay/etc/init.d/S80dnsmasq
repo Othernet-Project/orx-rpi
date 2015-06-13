@@ -1,0 +1,29 @@
+#!/bin/sh
+
+DAEMON=/usr/sbin/dnsmasq
+DNSMASQ_CONF=/opt/orx/dnsmasq.conf
+
+[ -x $DAEMON ] || exit 0
+[ -f $DNSMASQ_CONF ] || exit 0
+
+case "$1" in
+    start)
+        echo -n "Starting dnsmasq: "
+        start-stop-daemon -S -q -x $DAEMON -- -C $DNSMASQ_CONF
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+        ;;
+    stop)
+        echo -n "Stopping dnsmasq: "
+        start-stop-daemon -K -q -x $DAEMON -- -C $DNSMASQ_CONF
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+        ;;
+    restart|reload)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0

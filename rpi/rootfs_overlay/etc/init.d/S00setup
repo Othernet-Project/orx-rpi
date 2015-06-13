@@ -1,0 +1,159 @@
+#!/bin/sh
+
+source /opt/lib/storage.sh
+
+DEVNAME=mmcblk0
+SDCARD=/dev/${DEVNAME}
+CONF_PART=${SDCARD}p2
+LOG_PART=${SDCARD}p3
+DATA_PART=${SDCARD}p4
+DATA_DIR=/mnt/data
+CONF_PART_SIZE=16M
+LOG_PART_SIZE=40M
+CONF_DIR=/opt/orx
+BACKUP_DIR=/tmp/cfgbck
+SETUP_LOG=/tmp/setup
+
+log() {
+    msg=$1
+    echo "[$(date)] $1" >> $SETUP_LOG
+}
+
+backup_confs() {
+    log "Backing up default configuration"
+    mkdir -p $BACKUP_DIR
+    cp -ra $CONF_DIR/* $BACKUP_DIR
+}
+
+restore_confs() {
+    log "Restoring default configuration to new configuration partition"
+    cp -ra $BACKUP_DIR/* $CONF_DIR
+}
+
+chkparts() {
+    log "Checking partitions"
+    e2fsck -y $CONF_PART > /dev/null
+    e2fsck -y $LOG_PART > /dev/null
+}
+
+mkparts() {
+    # Wait for the device to appear
+    maxtries=3
+    until [ -b $SDCARD ]
+    do
+        sleep 2
+        maxtries=$(($maxtries - 1))
+        if [ $maxtries -lt 1 ]
+        then
+            log "No SD card found"
+            return 1
+        fi
+    done
+    if [ -b $DATA_PART ]
+    then
+        log "Data partition already initialized"
+        return 2
+    fi
+    # Partition and format the card
+    log "Preparing the SD card"
+    fdisk $SDCARD <<EOF > /dev/null
+n
+p
+2
+
++$CONF_PART_SIZE
+n
+p
+3
+
++$LOG_PART_SIZE
+n
+p
+
+
+w
+EOF
+    log "Formatting the newly created partitions"
+    mkfs.ext2 $CONF_PART > /dev/null || return 1
+    mkfs.ext2 $LOG_PART > /dev/null || return 1
+    mkfs.ext4 $DATA_PART > /dev/null || return 1
+    chkparts
+    log "Mounting the created partitions"
+    mount -a || return 1
+    log "Preparing the download directories"
+    mkdir -p /mnt/data/downloads/content
+    mkdir -p /mnt/data/downloads/files
+    mkdir -p /mnt/data/downloads/updates
+    mkdir -p /mnt/data/library
+    mkdir -p /mnt/data/db
+    return 0
+}
+
+use_extstore() {
+    log "Preparing external storage"
+    device=$1
+    if check_mounted_ext $device
+    then
+        log "$device already mounted as external storage"
+    fi
+    mkdir -p /mnt/tmp
+    log "Mounting $dev to temporary mount point"
+    mount $dev /mnt/tmp
+    if prepstorage $dev /mnt/tmp
+    then
+        log "Mounted $dev as external storage"
+        rm -rf /mnt/tmp
+        return 0
+    else
+        log "$dev could not be mounted as external storage"
+        umount /mnt/tmp || true
+        rm -rf /mnt/tmp
+        return 1
+    fi
+}
+
+find_extstore() {
+    for dev in /dev/sd[a-z]*
+    do
+        if checklabel $dev
+        then
+            log "$dev has label matching external storage"
+            use_extstore $dev && return 0
+        else
+            log "$dev does not look like external storage"
+        fi
+    done
+    log "No external storage units found"
+}
+
+case "$1" in
+    start)
+        echo -n "Starting preparation: "
+        backup_confs
+        mkparts
+        case $? in
+            0)
+                echo OK
+                restore_confs
+                find_extstore
+                ;;
+            1)
+                echo FAIL
+                rm -rf $BACKUP_DIR || true
+                ;;
+            2)
+                chkparts
+                mount -a || true
+                find_extstore
+                echo SKIPPED
+                rm -rf $BACKUP_DIR || true
+                ;;
+        esac
+        cp $SETUP_LOG /var/log
+        ;;
+    *)
+        echo "Usage: $0 {start}"
+        exit 1
+esac
+
+exit 0

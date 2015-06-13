@@ -1,0 +1,6 @@
+#!/bin/sh
+
+IFACE=$1
+ACTION=$2
+
+/sbin/if${ACTION} $IFACE

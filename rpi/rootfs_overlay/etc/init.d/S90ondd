@@ -1,0 +1,43 @@
+#!/bin/sh
+
+DAEMON=/usr/sbin/ondd
+ONDD_PID=/var/run/ondd.pid
+ONDD_OUT=/mnt/data/downloads
+FRONTEND=/dev/dvb/adapter0/frontend0
+
+case "$1" in
+    start)
+        [ -f $ONDD_PID ] && exit 0
+        echo -n "Starting ondd: "
+        if [ ! -c $FRONTEND ]
+        then
+            echo "FAIL"
+            exit 0
+        fi
+        start-stop-daemon -S -q -p $ONDD_PID -x $DAEMON \
+            -- -d --pid-file $ONDD_PID -o $ONDD_OUT
+        if [ $? = 0 ]
+        then
+            echo "OK"
+        else
+            [ -f $ONDD_PID ] && rm $ONDD_PID
+            echo "FAIL"
+        fi
+        ;;
+    stop)
+        echo -n "Stopping ondd: "
+        start-stop-daemon -K -q -p $ONDD_PID
+        [ -f $ONDD_PID ] && rm $ONDD_PID
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+        ;;
+    restart|reload)
+        $0 stop
+        /bin/sleep 1
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0

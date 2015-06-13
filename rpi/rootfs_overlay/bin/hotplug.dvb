@@ -1,0 +1,17 @@
+#!/bin/sh
+
+LOG="logger -t hotplug.dvb"
+
+# Handles udev event for dvb
+
+case "$ACTION" in
+    add)
+        echo "$DEVNAME" | grep frontend || exit 0
+        $LOG "DVB frontend $DEVNAME added, restarting ONDD"
+        /etc/init.d/S90ondd restart || $LOG "Failed to restart ONDD"
+        ;;
+    remove)
+        $LOG "DVB frontend $DEVNAME removed, stopping ONDD"
+        /etc/init.d/S90ondd stop || $LOG "Failed to stop ONDD"
+        ;;
+esac

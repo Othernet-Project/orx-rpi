@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_OUTERNET_METADATA
+	bool "python-outernet-metadata"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_CHAINABLE_VALIDATORS
+	help
+	  Library for validating Outernet metadata
+
+	  https://github.com/Outernet-Project/outernet-metadata/

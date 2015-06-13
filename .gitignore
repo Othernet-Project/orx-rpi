@@ -1,0 +1,5 @@
+*.sw[op]
+/.buildlog
+/*.img
+/*.zip
+/*.md5

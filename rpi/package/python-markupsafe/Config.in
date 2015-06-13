@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_MARKUPSAFE
+	bool "python-markupsafe"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  Implements a unicode subclass that supports HTML strings.
+
+	  http://github.com/mitsuhiko/markupsafe

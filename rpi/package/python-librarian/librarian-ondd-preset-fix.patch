@@ -1,0 +1,45 @@
+diff --git a/librarian/plugins/ondd/plugin.py b/librarian/plugins/ondd/plugin.py
+index 6218184..65162bf 100644
+--- a/librarian/plugins/ondd/plugin.py
++++ b/librarian/plugins/ondd/plugin.py
+@@ -69,32 +69,32 @@ LNB_TYPES = (
+ 
+ PRESETS = [
+     ('Galaxy 19 (97.0W)', 1, {
+-        'frequency': '12177',
+-        'symbolrate': '23000',
++        'frequency': 12177,
++        'symbolrate': 23000,
+         'polarization': 'v',
+         'delivery': 'DVB-S',
+         'modulation': 'QPSK',
+         'azimuth': 0,
+     }),
+     ('Hotbird 13 (13.0E)', 2, {
+-        'frequency': '11471',
+-        'symbolrate': '27500',
++        'frequency': 11471,
++        'symbolrate': 27500,
+         'polarization': 'v',
+         'delivery': 'DVB-S',
+         'modulation': 'QPSK',
+         'azimuth': 0,
+     }),
+     ('Intelsat 20 (68.5E)', 3, {
+-        'frequency': '12522',
+-        'symbolrate': '27500',
++        'frequency': 12522,
++        'symbolrate': 27500,
+         'polarization': 'v',
+         'delivery': 'DVB-S',
+         'modulation': 'QPSK',
+         'azimuth': 0,
+     }),
+     ('Intelsat 10 (47.5E)', 4, {
+-        'frequency': '12602',
+-        'symbolrate': '10110',
++        'frequency': 12602,
++        'symbolrate': 10110,
+         'polarization': 'v',
+         'delivery': 'DVB-S2',
+         'modulation': 'QPSK',
