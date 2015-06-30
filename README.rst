@@ -5,6 +5,9 @@ ORx build for Raspbery Pi
 This repository contains open-source build scripts and closed-source binary
 blobs for building an ORx Raspberry Pi image. 
 
+If you are simply looking to build your own receiver, please see `Receiver
+HOWTO`_.
+
 ORx is a home-made receiver based around Raspberry Pi. It can be used to
 receive files from Outernet networks using DVB-S/S2 signal (satellite TV). It
 also has support for creating Wireless hotspots. Please look at the docs
@@ -128,4 +131,5 @@ Reporting bugs
 
 Please report bugs to the `issue tracker`_.
 
+.. _Receiver HOWTO: docs/receiver.rst
 .. _issue tracker: https://github.com/Outernet-Project/orx-rpi/issues
