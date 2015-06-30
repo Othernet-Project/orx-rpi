@@ -8,6 +8,8 @@ and command line is beneficial.
 
 The instructions found here are applicable to the `Outernet DIY receiver kit`_.
 
+.. contents::
+
 Things you will need
 ====================
 
