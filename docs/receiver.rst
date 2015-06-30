@@ -48,6 +48,15 @@ the scope of this document). The images are located on
 `archive.outernet.is/images/`_, and latest image is always named
 `ORxPi-latest.img.zip`_. Once the file is downloaded, unzip it.
 
+Choosing the SD card
+--------------------
+
+You should be aware that not all cards work. While we haven't encountered any
+issues with the card brands we are using, there have been reports of
+non-working cards. Please refer to the `list on elinux.org`_ for more
+information on different card brands people have tested.
+
+
 Creating the SD card on Windows
 -------------------------------
 
@@ -139,3 +148,4 @@ resolve this issue.
 .. _librarian.outernet: http://librarian.outernet/
 .. _10.0.0.1: http://10.0.0.1/
 .. _Fing: http://www.overlooksoft.com/download
+.. _list on elinux.org: http://elinux.org/RPi_SD_cards#Working_.2F_Non-working_SD_cards
