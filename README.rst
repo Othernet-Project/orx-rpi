@@ -35,7 +35,7 @@ The following should be installed on the build box:
 - git
 - libstdc++6 32-bit (on 64-bit systems)
 
-Also rquired for creting the SD card image:
+Also required for creating the SD card image:
 
 - e2fsprogs
 - dosfstools
