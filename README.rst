@@ -42,9 +42,43 @@ Also rquired for creting the SD card image:
 - parted
 - qemu
 
-About the image
-===============
+System username and password
+============================
 
+Use the following credentials to log in or SSH into the receiver:
+
+========  ========
+username  outernet
+password  outernet
+========  ========
+
+At this moment, these credentials cannot be changed. This may change in future
+releases.
+
+About the generated images
+==========================
+
+The image files generated using this build system can be downloaded from
+`archive.outernet.is/images/`_. The image file contains a single FAT32
+partition which contains the files necessary to boot the system.
+
+The root filesystem is part of the kernel image (``zImage`` file) and will
+create all other necessary partitions on first boot. Three new partitions are
+created:
+
+- ``/dev/mmcblk0p2`` mounted on ``/opt/orx`` for persistent configuration
+- ``/dev/mmcblk0p3`` mounted on ``/var/log`` for persistent system logs
+- ``/dev/mmcblk0p4`` mounted on ``/mnt/data`` for storing downloaded content
+
+The first partition, together with second and third, take up approximately
+100MB of the SD card, while the last partition will use the remaining space.
+
+The kernel is stripped down to minimum necessary to boot the system and use
+tuners, WiFi dongles, and storage devices. Other classes of devices may not
+work.
+
+When updating the system, it is enough to copy the new ``zImage`` file to the
+first partition instead of creating a new card.
 
 Cloning the repository
 ======================
@@ -133,3 +167,4 @@ Please report bugs to the `issue tracker`_.
 
 .. _Receiver HOWTO: docs/receiver.rst
 .. _issue tracker: https://github.com/Outernet-Project/orx-rpi/issues
+.. _archive.outernet.is/images/: http://archive.outernet.is/images/
