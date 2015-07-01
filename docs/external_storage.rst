@@ -21,8 +21,8 @@ Notes on mechanical hard drives
 
 First generation of Raspberry Pi boards have a limitation that renders external
 mechanical hard drives useless when plugged directly into its USB hub. In order
-to use a mechanical hard drive, you will also need a powered USB hub that come
-with their own power supply and do not draw power from Raspberry Pi's USB hub.
+to use a mechanical hard drive, you will also need a powered USB hub that comes
+with its own power supply and does not draw power from Raspberry Pi's USB hub.
 USB sticks are generally much more convenient as they do not have this issue.
 
 Preparing the device
