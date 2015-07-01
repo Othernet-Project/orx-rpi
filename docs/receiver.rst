@@ -42,6 +42,9 @@ Creating the bootable SD card
 If you have purchased the Outernet DIY receiver kit, you may skip this section,
 and continue with `Assembling the receiver`_.
 
+If you already have a bootable SD card, and you only wish to update it, please
+refer to `Updating HOWTO`_.
+
 To create the bootable SD card containing the ORxPi operating system, you need
 to obtain the latest image (or create the image yourself, but that is outside
 the scope of this document). The images are located on
@@ -149,3 +152,4 @@ resolve this issue.
 .. _10.0.0.1: http://10.0.0.1/
 .. _Fing: http://www.overlooksoft.com/download
 .. _list on elinux.org: http://elinux.org/RPi_SD_cards#Working_.2F_Non-working_SD_cards
+.. _Updating HOWTO: ./updating.rst
