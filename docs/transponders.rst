@@ -94,7 +94,7 @@ Intelsat 10 47.5°E (Europe, Africa)
 
 ==============  ============
 Frequency       12,602 MHz
-Symbolrage      10,112 baud
+Symbolrage      10,112 kbaud
 Polarization    Vertical
 Delivery        DVB-S2
 Constellation   QPSK
