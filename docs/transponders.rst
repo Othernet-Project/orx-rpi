@@ -3,7 +3,9 @@ Transponders
 ============
 
 These are the currently active transponders on which Outernet service can be
-received.
+received. Maps in this document are approximations, and the actual signal
+strength and quality depend on factors such as weather conditions, quality of
+equipment, your location, and many others.
 
 .. contents::
 
