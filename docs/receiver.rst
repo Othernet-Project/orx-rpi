@@ -133,6 +133,12 @@ Accessing over LAN
 To access over LAN, you need to find the receiver's IP address on the LAN.
 Doing this is outside the scope of this document. We normally use Fing_.
 
+Tuning in
+=========
+
+Please see the list of `Outernet transponders`_ for tuning and coverage 
+information.
+
 Known issues
 ============
 
@@ -153,3 +159,4 @@ resolve this issue.
 .. _Fing: http://www.overlooksoft.com/download
 .. _list on elinux.org: http://elinux.org/RPi_SD_cards#Working_.2F_Non-working_SD_cards
 .. _Updating HOWTO: ./updating.rst
+.. _Outernet transponders: ./transponders.rst
