@@ -146,6 +146,19 @@ Further reading
 - `External storage HOWTO`_
 - `Updating HOWTO`_
 
+System username and password
+============================
+
+Use the following credentials to log in or SSH into the receiver:
+
+========  ========
+username  outernet
+password  outernet
+========  ========
+
+At this moment, these credentials cannot be changed. This may change in future
+releases.
+
 Known issues
 ============
 
