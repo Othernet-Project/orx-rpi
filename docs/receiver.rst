@@ -20,7 +20,7 @@ You will need:
 - `Satellite dish`_ (80cm to 100cm depending on location)
 - LNB_ (Universal is recommended, unless you are in a C-band area)
 - Raspberry Pi model B or B+ (see `Known issues` below)
-- USB DVB-S/S2 Tuner with power supply (see `list of tuners`_)
+- USB DVB-S/S2 tuner with power supply (see `list of tuners`_)
 - (optional) WiFi dongle (see `list of WiFi dongles`_)
 - Power supply for Pi with 1A or more of output (you can also use a mobile
   phone charger)
@@ -139,6 +139,12 @@ Tuning in
 Please see the list of `Outernet transponders`_ for tuning and coverage 
 information.
 
+Further reading
+===============
+
+- `Adding content HOWTO`_
+- `Updating HOWTO`_
+
 Known issues
 ============
 
@@ -160,3 +166,4 @@ resolve this issue.
 .. _list on elinux.org: http://elinux.org/RPi_SD_cards#Working_.2F_Non-working_SD_cards
 .. _Updating HOWTO: ./updating.rst
 .. _Outernet transponders: ./transponders.rst
+.. _Adding content HOWTO: ./adding_content.rst
