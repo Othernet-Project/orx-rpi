@@ -143,6 +143,7 @@ Further reading
 ===============
 
 - `Adding content HOWTO`_
+- `External storage HOWTO`_
 - `Updating HOWTO`_
 
 Known issues
@@ -167,3 +168,4 @@ resolve this issue.
 .. _Updating HOWTO: ./updating.rst
 .. _Outernet transponders: ./transponders.rst
 .. _Adding content HOWTO: ./adding_content.rst
+.. _External storage HOWTO: ./external_storage.rst
