@@ -1,6 +1,6 @@
-===========================
-Building the ORxPi receiver
-===========================
+==============
+Receiver HOWTO
+==============
 
 This document outlines the process of building the ORxPi receiver. No
 familiarity with Linux is needed, but in some cases, familiarity with terminals
