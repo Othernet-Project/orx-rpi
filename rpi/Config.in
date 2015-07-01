@@ -1,5 +1,4 @@
 source "$BR2_EXTERNAL/package/python-librarian/Config.in"
-source "$BR2_EXTERNAL/package/ondd/Config.in"
 source "$BR2_EXTERNAL/package/python-bottle-fdsend/Config.in"
 source "$BR2_EXTERNAL/package/python-bottle-utils-ajax/Config.in"
 source "$BR2_EXTERNAL/package/python-bottle-utils-common/Config.in"
