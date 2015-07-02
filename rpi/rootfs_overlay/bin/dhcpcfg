@@ -1,0 +1,16 @@
+#!/bin/sh
+
+IFACE=$1
+STATE=$2
+DHCP=/sbin/udhcpc
+HOSTNAME=$(cat /etc/hostname)
+PIDFILE=/var/run/udhcpc.${IFACE}.pid
+
+case "$STATE" in
+    up)
+        $DHCP -x hostname:$HOSTNAME -i $IFACE -p $PIDFILE -S
+        ;;
+    down)
+        kill $(cat $PIDFILE)
+        ;;
+esac
