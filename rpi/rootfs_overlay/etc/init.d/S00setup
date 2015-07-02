@@ -4,6 +4,7 @@ source /opt/lib/storage.sh
 
 DEVNAME=mmcblk0
 SDCARD=/dev/${DEVNAME}
+ROOT_PART=${SDCARD}p1
 CONF_PART=${SDCARD}p2
 LOG_PART=${SDCARD}p3
 DATA_PART=${SDCARD}p4
@@ -32,15 +33,16 @@ restore_confs() {
 
 chkparts() {
     log "Checking partitions"
-    e2fsck -y $CONF_PART > /dev/null
-    e2fsck -y $LOG_PART > /dev/null
+    e2fsck -y $CONF_PART >> $SETUP_LOG
+    e2fsck -y $LOG_PART >> $SETUP_LOG
 }
 
 mkparts() {
     # Wait for the device to appear
     maxtries=3
-    until [ -b $SDCARD ]
+    until [ -b $ROOT_PART ]
     do
+        log "Waiting for SD card root partition to appear at $ROOT_PART"
         sleep 2
         maxtries=$(($maxtries - 1))
         if [ $maxtries -lt 1 ]
@@ -51,12 +53,14 @@ mkparts() {
     done
     if [ -b $DATA_PART ]
     then
-        log "Data partition already initialized"
+        log "Data partition $DATA_PART already initialized"
         return 2
+    else
+        log "No data partition found on $DATA_PART, continuing with setup"
     fi
     # Partition and format the card
     log "Preparing the SD card"
-    fdisk $SDCARD <<EOF > /dev/null
+    fdisk $SDCARD <<EOF >> $SETUP_LOG
 n
 p
 2
@@ -74,9 +78,9 @@ p
 w
 EOF
     log "Formatting the newly created partitions"
-    mkfs.ext2 $CONF_PART > /dev/null || return 1
-    mkfs.ext2 $LOG_PART > /dev/null || return 1
-    mkfs.ext4 $DATA_PART > /dev/null || return 1
+    mkfs.ext2 $CONF_PART >> $SETUP_LOG || return 1
+    mkfs.ext2 $LOG_PART >> $SETUP_LOG || return 1
+    mkfs.ext4 $DATA_PART >> $SETUP_LOG || return 1
     chkparts
     log "Mounting the created partitions"
     mount -a || return 1
