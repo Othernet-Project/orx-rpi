@@ -165,6 +165,6 @@ Reporting bugs
 
 Please report bugs to the `issue tracker`_.
 
-.. _Receiver HOWTO: docs/receiver.rst
+.. _Receiver HOWTO: https://wiki.outernet.is/wiki/ORxPi
 .. _issue tracker: https://github.com/Outernet-Project/orx-rpi/issues
 .. _archive.outernet.is/images/: http://archive.outernet.is/images/
