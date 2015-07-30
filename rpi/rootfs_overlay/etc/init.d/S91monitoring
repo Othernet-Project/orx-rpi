@@ -1,0 +1,41 @@
+#!/bin/sh
+
+DAEMON=/usr/sbin/monitor
+PERSIST_DIR=/opt/orx
+PLATFORM=$(cat /etc/platform)
+MON_PID=/var/run/monitoring.pid
+MON_KEY=${PERSIST_DIR}/monitoring.key
+MON_ACT=${PERSIST_DIR}/monitoring.yes
+MON_BUF=${PERSIST_DIR}/monitoring.buffer
+MON_URL=http://status.outernet.is/heartbeat/
+
+case "$1" in
+    start)
+        [ -f $MON_PID ] && exit 0
+        echo -n "Starting monitoring: "
+        start-stop-daemon -S -q -p $MON_PID -x $DAEMON \
+            -- -P $MON_PID -u $MON_URL -k $MON_KEY -b $MON_BUF -p $PLATFORM &
+        if [ $? = 0 ]
+        then
+            echo "OK"
+        else
+            [ -f $ONDD_PID ] && rm $ONDD_PID
+            echo "FAIL"
+        fi
+        ;;
+    stop)
+        echo -n "Stopping monitoring: "
+        start-stop-daemon -K -q -p $MON_PID
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+        ;;
+    restart|reload)
+        $0 stop
+        /bin/sleep 1
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0
