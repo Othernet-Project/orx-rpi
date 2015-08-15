@@ -50,7 +50,25 @@ Cloning the repository
 Compiling the toolchain
 =======================
 
-The toolchain confiuration supplied with this code::
+Before you can build the toolchain, you may need to install a few extra
+packages. For example, on Ubuntu 14.04, these include:
+
+- build-essential
+- gperf
+- automake
+- bison
+- libncurses5-dev
+- texinfo
+
+Running the configure script as described in the following text may give you
+hints about any missing packages.
+
+If you are on Windows, and are building the toolchain in a virtual machine,
+make sure it has plenty of storage and memory. You may need more than 40GB of
+virtual hard drive space.
+
+The toolchain confiuration supplied with this code. To build, run the following
+commands::
 
     $ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.20.0.tar.bz2
     $ tar xvf crosstool-ng-1.20.0.tar.bz2
