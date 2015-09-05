@@ -28,7 +28,7 @@ abort() {
     echo $1
     umount $TMPDIR >> $LOG 2>&1 || true
     rm -rf $TMPDIR >> $LOG 2>&1 || true
-    losetup -D $LOOP >> $LOG 2>&1 || true    
+    losetup -d $LOOP >> $LOG 2>&1 || true    
     rm "$IMAGE_FILE" >> $LOG 2>&1 || true
     exit 1
 }
@@ -73,7 +73,7 @@ echo DONE
 
 echo -n "Cleaning up..."
 rm -rf tmp || quit
-losetup -D $LOOP || quit
+losetup -d $LOOP || quit
 echo DONE
 
 chown $IMAGE_UID:$IMAGE_GID $IMAGE_FILE >> $LOG 2>&1 || true
