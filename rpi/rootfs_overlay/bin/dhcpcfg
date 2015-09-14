@@ -8,7 +8,11 @@ PIDFILE=/var/run/udhcpc.${IFACE}.pid
 
 case "$STATE" in
     up)
-        $DHCP -x hostname:$HOSTNAME -i $IFACE -p $PIDFILE -S
+        if [ -f $PIDFILE ];
+        then
+            exit 0
+        fi
+        $DHCP -x hostname:$HOSTNAME -i $IFACE -p $PIDFILE -S -b
         ;;
     down)
         kill $(cat $PIDFILE)
