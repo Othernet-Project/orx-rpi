@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_LIBRARIAN_CONTENT
+	bool "python-librarian-content"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
+    select BR2_PACKAGE_PYTHON_FSAL
+	help
+      Librarian content management base API
+
+	  https://github.com/Outernet-Project/librarian-content/

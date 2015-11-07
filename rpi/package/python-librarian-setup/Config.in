@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_LIBRARIAN_SETUP
+	bool "python-librarian-setup"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
+	help
+      Librarian setup wizard
+
+	  https://github.com/Outernet-Project/librarian-setup/

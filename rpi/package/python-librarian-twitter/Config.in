@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_LIBRARIAN_TWITTER
+	bool "python-librarian-twitter"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
+    select BR2_PACKAGE_PYTHON_LIBRARIAN_CONTENT
+	help
+      Librarian Twitter app 
+
+	  https://github.com/Outernet-Project/librarian-twitter/

@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_BOTTLE_UTILS
+	bool "python-bottle-utils"
+	depends on BR2_PACKAGE_PYTHON_BOTTLE
+	help
+	  Bottle Utils is a collection of loosely related packages for
+	  developing web applications using Bottle web framework.
+
+	  http://bottle-utils.readthedocs.org/
