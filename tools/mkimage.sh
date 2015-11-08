@@ -5,11 +5,11 @@ set -e
 
 SCRIPTDIR=$(dirname "$0")
 LOG=.buildlog
-VERSION=$(cat "$SCRIPTDIR/../version")
-PLATFORM=$(cat "$SCRIPTDIR/../platform")
+PLATFORM=$1
+VERSION=$2
 
 # Image file
-IMAGE_SIZE=42M
+IMAGE_SIZE=80M
 IMAGE_FILE="${PLATFORM}-${VERSION}.img"
 IMAGE_UID=1000
 IMAGE_GID=1000
@@ -19,8 +19,7 @@ LOOP=/dev/loop0
 BOOT_FS=${LOOP}p1
 
 # Misc
-OUTPUT=${SCRIPTDIR}/../../buildroot/output/images
-CONFS=${SCRIPTDIR}/../rootfs_overlay/opt/orx
+OUTPUT=${SCRIPTDIR}/../buidroot/output/images
 TMPDIR=tmp
 
 abort() {
@@ -67,6 +66,8 @@ mkdir $TMPDIR
 mount $BOOT_FS $TMPDIR || abort "Could not mount image file"
 cp -r $OUTPUT/rpi-firmware/* $TMPDIR || abort "Could not copy firmware files"
 rm -rf $TMPDIR/overlays || abort "Could not remove overlays"
+rm $TMPDIR/cmdline.txt || abort "Could not remove cmdline.txt"
+cp $OUTPUT/*.dtb $TMPDIR || abort "Could not copy dtb"
 cp $OUTPUT/zImage $TMPDIR || abort "Could not copy kernel image"
 umount $BOOT_FS || quit
 echo DONE

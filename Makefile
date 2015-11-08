@@ -16,6 +16,7 @@ CONFIG = $(BUILDROOT)/.config
 OUTPUT = $(BUILDROOT)/output
 IMAGES_DIR = $(OUTPUT)/images
 KERNEL_IMAGE = $(IMAGES_DIR)/zImage
+TOOLS_DIR = tools
 
 EXTERNAL = .$(BOARD_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
@@ -49,7 +50,7 @@ update: $(KERNEL_IMAGE)
 image: $(IMAGE_FILE)
 
 $(IMAGE_FILE): $(KERNEL_IMAGE)
-	@$(BOARD_DIR)/tools/mkimage.sh
+	@$(TOOLS_DIR)/mkimage.sh $(PLATFORM) $(VERSION)
 
 $(KERNEL_IMAGE): $(CONFIG)
 	@make -C $(BUILDROOT) 
