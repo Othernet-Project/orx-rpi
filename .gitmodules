@@ -1,7 +1,3 @@
 [submodule "buildroot"]
 	path = buildroot
 	url = git://git.buildroot.net/buildroot
-[submodule "rpi-linux"]
-	path = rpi-linux
-	url = https://github.com/Outernet-Project/rpi-linux.git
-	branch = outernet-3.19.y
