@@ -1,26 +1,24 @@
 #!/bin/sh
 
-CONF_PATH=/etc/librarian.ini
-LIBRARIAN_PID=/var/run/librarian.pid
-DAEMON="librarian --conf $CONF_PATH"
+CONF_PATH=/etc/fsal.ini
+FSAL_PID=/var/run/fsal.pid
+DAEMON="fsal-daemon --pid-file $FSAL_PID --conf $CONF_PATH"
 
 case "$1" in
     start)
-        [ ! -f $LIBRARIAN_PID ] || exit 0
-        echo -n "Starting librarian: "
+        [ ! -f $FSAL_PID ] || exit 0
+        echo -n "Starting fsal: "
         $DAEMON > /dev/null 2>&1 &
         if [ $? ]; then
-            echo $! > $LIBRARIAN_PID
             echo "OK"
         else
             echo "FAILED"
         fi
         ;;
     stop)
-        if [ -f $LIBRARIAN_PID ] ; then
-            echo -n "Stopping librarian: "
-            kill $(cat $LIBRARIAN_PID)
-            rm $LIBRARIAN_PID
+        if [ -f $FSAL_PID ] ; then
+            echo -n "Stopping fsal: "
+            kill $(cat $FSAL_PID)
             echo "OK"
         fi
         ;;

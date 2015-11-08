@@ -3,7 +3,7 @@
 # Starts dropbear sshd.
 #
 
-KEYDIR=/opt/orx/dropbear
+KEYDIR=/etc/dropbear
 KEYDSS=$KEYDIR/dss_host_key
 KEYRSA=$KEYDIR/rsa_host_key
 DROPBEAR_PID=/var/run/dropbear.pid

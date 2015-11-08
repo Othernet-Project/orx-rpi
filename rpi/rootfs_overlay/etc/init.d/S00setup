@@ -15,20 +15,55 @@ CONF_DIR=/opt/orx
 BACKUP_DIR=/tmp/cfgbck
 SETUP_LOG=/tmp/setup
 
+PERSISTENT=(
+    /etc/shadow
+    /etc/group
+    /etc/profile
+    /etc/hostapd.conf
+    /etc/dnsmasq.conf
+    /etc/fsal.ini
+    /etc/librarian.ini
+    /etc/fstab
+    /etc/sudoers
+    /etc/profile
+    /etc/dropbear
+)
+
 log() {
     msg=$1
     echo "[$(date)] $1" >> $SETUP_LOG
 }
 
-backup_confs() {
-    log "Backing up default configuration"
-    mkdir -p $BACKUP_DIR
-    cp -ra $CONF_DIR/* $BACKUP_DIR
+relpath() {
+    path=$1
+    par=$2
+    echo ${path##$par/}
 }
 
-restore_confs() {
-    log "Restoring default configuration to new configuration partition"
-    cp -ra $BACKUP_DIR/* $CONF_DIR
+makeperistent() {
+    log "Setting up persistent configuration"
+    for path in ${PERSISTENT[@]}
+    do
+        relp=$(relpath "$path" /etc)
+        target=$CONF_DIR/$relp
+        target_dir=$(dirname "$target")
+        if ! [ -e "$target" ]
+        then
+            mkdir -p "$target_dir"
+            log "Copying $path -> $target"
+            # If it's a regular file, we copy it as is
+            if [ -f "$c" ]
+            then
+                cp -a "$path" "$target"
+            else
+                cp -R "$path" "$target"
+            fi
+        fi
+        log "Removing $path"
+        rm "$path"
+        ln -s "$target" "$path"
+        log "Linked $target -> $path"
+    done
 }
 
 chkparts() {
@@ -133,12 +168,11 @@ find_extstore() {
 case "$1" in
     start)
         echo -n "Starting preparation: "
-        backup_confs
+        export LANG="en_US.UTF-8"
         mkparts
         case $? in
             0)
                 echo OK
-                restore_confs
                 find_extstore
                 ;;
             1)
@@ -153,6 +187,7 @@ case "$1" in
                 rm -rf $BACKUP_DIR || true
                 ;;
         esac
+        make_persistent
         cp $SETUP_LOG /var/log
         ;;
     *)

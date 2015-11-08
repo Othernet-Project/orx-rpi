@@ -7,6 +7,8 @@ export PATH=\
 /usr/sbin:\
 /usr/local/bin
 
+export LANG="en_US.UTF-8"
+
 # If running interactively, then:
 if [ "$PS1" ]; then
     export PS1="$(cat /etc/platform) v$(cat /etc/version) | \u@\h:\w> "
