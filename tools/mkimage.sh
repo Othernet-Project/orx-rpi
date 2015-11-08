@@ -19,7 +19,7 @@ LOOP=/dev/loop0
 BOOT_FS=${LOOP}p1
 
 # Misc
-OUTPUT=${SCRIPTDIR}/../buidroot/output/images
+OUTPUT=${SCRIPTDIR}/../buildroot/output/images
 TMPDIR=tmp
 
 abort() {
