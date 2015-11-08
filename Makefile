@@ -20,7 +20,7 @@ KERNEL_IMAGE = $(IMAGES_DIR)/zImage
 EXTERNAL = .$(BOARD_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
 
-.PHONY: clean build
+.PHONY: default version build sdcard gzimage zipimage update image menuconfig linux-menuconfig busybox-menuconfig saveconfig config help clean-build clean
 
 default: build
 
@@ -75,12 +75,6 @@ $(CONFIG):
 
 help:
 	@cat HELP
-
-clean-linux:
-	@make -C $(OUTPUT)/build/linux-custom clean
-
-clean-librarian:
-	@rm -rf $(OUTPUT)/build/python-librarian
 
 clean-build:
 	@-rm $(KERNEL_IMAGE)
