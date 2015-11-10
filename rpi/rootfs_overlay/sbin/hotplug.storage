@@ -5,6 +5,7 @@ import sys
 import stat
 import time
 import glob
+import shutil
 import syslog
 from contextlib import contextmanager
 from subprocess import call, check_output as ocall, CalledProcessError
@@ -54,6 +55,16 @@ UPGRADE_EXEC = '/usr/sbin/pkgtool'
 LED_CLASS = 'status'
 START_BLINK_INTERVAL = 500
 PROGRESS_BLINK_INTERVAL = 100
+
+# Directory Structure Migration
+MIGRATE = (
+    ('librarian/zipballs', 'legacy'),
+    ('downloads/files', ''),
+)
+CLEANUP = (
+    'librarian',
+    'downloads',
+)
 
 
 def log_err(msg):
@@ -123,6 +134,44 @@ def set_ext_platform(mdir):
     log_dbg('Writing platform file to external storage')
     with open(platform_file, 'w') as f:
         f.write(get_platform())
+
+
+def ensure_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def movetree(src, dst):
+    ensure_dir(dst)
+    for item in glob.iglob(os.path.join(src, '*')):
+        shutil.move(item, dst)
+
+
+def relocate_data(mdir):
+    for (src, dst) in MIGRATE:
+        src_path = os.path.join(mdir, src)
+        dst_path = os.path.join(mdir, dst)
+        if os.path.exists(src_path):
+            log_dbg('Copying {} into {}'.format(src_path, dst_path))
+            movetree(src_path, dst_path)
+
+
+def delete_obsolete(mdir):
+    for item in CLEANUP:
+        path = os.path.join(mdir, item)
+        if os.path.exists(path):
+            log_dbg('Deleting {}'.format(path))
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.unlink(path)
+
+
+def migrate_structure(mdir):
+    # move data that needs to be migrated to the specified locations
+    relocate_data(mdir)
+    # delete obsolete data
+    delete_obsolete(mdir)
 
 
 def copy_contents(src, target):
@@ -219,7 +268,7 @@ def use_ext(devname, mdir, fs):
     if is_using_ext():
         # We are already using one storage device as external storage. We can't
         # have more than one, sorry.
-        log_info('Already using external storage. Nothing to do.') 
+        log_info('Already using external storage. Nothing to do.')
         return
 
     # External storage can be blank (never used) or contain a platform file
@@ -234,7 +283,7 @@ def use_ext(devname, mdir, fs):
         ext_platform or '(none)'))
 
     if (not first_use) and (ext_platform != this_platform):
-        # This device has been used before, but on another system. We 
+        # This device has been used before, but on another system. We
         # can't use it here.
         log_err('This storage has been used on another platform {}. Nothing '
                 'to do.'.format(ext_platform))
@@ -247,6 +296,13 @@ def use_ext(devname, mdir, fs):
             # This external storage needs to be marked
             log_dbg('Initializing external storage')
             set_ext_platform(mdir)
+            log_dbg('Migrating old directory structure')
+            try:
+                migrate_structure(mdir)
+            except Exception as exc:
+                log_err('Migration failure: {0}'.format(str(exc)))
+            else:
+                log_dbg('Migration finished successfully.')
 
         # Synchronize the internal and external storage
         if os.path.exists(DATADIR):
@@ -266,7 +322,7 @@ def use_ext(devname, mdir, fs):
 
         # Finally mount the data dir
         mount.umount(devname)
-        ret = mount.mount(devname, DATADIR, fs=fs, 
+        ret = mount.mount(devname, DATADIR, fs=fs,
                           opts=MOUNT_OPTS.get(fs, DEFAULT_MOUNT_OPTS))
         if ret != 0:
             raise RuntimeError('Failed to remount as data storage')
