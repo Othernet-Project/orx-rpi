@@ -7,6 +7,6 @@ tmpfs		/tmp		tmpfs	mode=1777	0	0
 tmpfs		/run		tmpfs	mode=0755,nosuid,nodev	0	0
 sysfs		/sys		sysfs	defaults	0	0
 
-/dev/mmcblk0p2  /opt/orx  ext2   rw          0   2
-/dev/mmcblk0p3  /var/log  ext2   rw          0   2
-/dev/mmcblk0p4  /mnt/data ext4   rw          0   2
+/dev/mmcblk0p2  /mnt/persist    ext4   rw,noatime   0   2
+/dev/mmcblk0p3  /var/log        ext4   rw,noatime   0   2
+/dev/mmcblk0p4  /mnt/data       ext4   rw,noatime   0   2
