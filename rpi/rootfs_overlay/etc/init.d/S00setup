@@ -123,7 +123,6 @@ persist() {
 case "$1" in
     start)
         echo -n "Starting preparation: "
-        export LANG="en_US.UTF-8"
         mkparts
         case $? in
             0)
