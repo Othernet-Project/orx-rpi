@@ -5,12 +5,10 @@ set -e
 
 SCRIPTDIR=$(dirname "$0")
 LOG=.buildlog
-PLATFORM=$1
-VERSION=$2
 
 # Image file
 IMAGE_SIZE=80M
-IMAGE_FILE="${PLATFORM}-${VERSION}.img"
+IMAGE_FILE=${1:="${SCRIPTDIR}../images/${PLATFORM}-${VERSION}.img"}
 IMAGE_UID=1000
 IMAGE_GID=1000
 
