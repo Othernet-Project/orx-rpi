@@ -80,8 +80,6 @@ help:
 clean-build:
 	@-rm $(KERNEL_IMAGE)
 	@-rm $(IMAGES_DIR)/rootfs*
-	@-rm $(IMAGE_FILE)*
 
 clean:
 	@make -C $(BUILDROOT) clean
-	@-rm $(IMAGE_FILE)*
