@@ -13,7 +13,7 @@ relpath() {
 
 
 # Remove existing statics
-/usr/bin/rm -rf $COLLECT_TO/*
+rm -rf $COLLECT_TO/*
 
 for d in $SITES/librarian_*/static
 do
