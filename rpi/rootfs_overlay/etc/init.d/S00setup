@@ -133,8 +133,6 @@ case "$1" in
                 exit 1
                 ;;
             2)
-                log "Mounting the internal storage"
-                mount -a || (echo FAIL && exit 1)
                 echo SKIPPED
                 ;;
         esac
