@@ -37,11 +37,6 @@ relpath() {
     echo ${path##$par/}
 }
 
-chkparts() {
-    log "Checking partitions"
-    e2fsck -y $LOG_PART >> $SETUP_LOG || true
-}
-
 mkparts() {
     # Wait for the device to appear
     maxtries=3
@@ -86,7 +81,6 @@ EOF
     mkfs.ext4 $CONF_PART >> $SETUP_LOG || return 1
     mkfs.ext4 $LOG_PART >> $SETUP_LOG || return 1
     mkfs.ext4 $DATA_PART >> $SETUP_LOG || return 1
-    chkparts
     return 0
 }
 
