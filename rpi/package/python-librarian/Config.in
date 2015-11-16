@@ -17,6 +17,7 @@ config BR2_PACKAGE_PYTHON_LIBRARIAN
     select BR2_PACKAGE_PYTHON_SQLIZE
     select BR2_PACKAGE_PYTHON_PBKDF2
     select BR2_PACKAGE_PYTHON_WEBASSETS
+    select BR2_PACKAGE_PYTHON_SETUPTOOLS
 	help
       Content library manager for Outernet Receiver
 
