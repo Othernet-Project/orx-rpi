@@ -1,0 +1,35 @@
+diff --git a/librarian/plugins/ondd/plugin.py b/home/andrean/dev/plugin.py
+index 411a744..aa9503a 100644
+--- a/librarian/plugins/ondd/plugin.py
++++ b/home/andrean/dev/plugin.py
+@@ -11,6 +11,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
+ """
+ 
+ import logging
++import os
+ 
+ from bottle import request
+ from bottle_utils import form
+@@ -127,6 +128,13 @@ PRESETS = [
+ ]
+ 
+ 
++TUNER_PATH = '/dev/dvb/adapter0'
++
++
++def tuner_exists():
++    return os.path.exists(TUNER_PATH)
++
++
+ @template_helper
+ def get_bitrate(status):
+     for stream in status.get('streams', []):
+@@ -224,7 +232,7 @@ class ONDDForm(form.Form):
+                                     tone=needs_tone,
+                                     modulation=dict(MODULATION)[modulation],
+                                     voltage=VOLTS[polarization])
+-        if not response.startswith('2'):
++        if tuner_exists() and not response.startswith('2'):
+             # Translators, error message shown when setting transponder
+             # configuration is not successful
+             raise form.ValidationError('tuning_error', {})

@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_BOTTLE_UTILS_AJAX
+	bool "python-bottle-utils-ajax"
+	depends on BR2_PACKAGE_PYTHON_BOTTLE
+	help
+	  Bottle Utils is a collection of loosely related packages for
+	  developing web applications using Bottle web framework. This
+	  package contains the AJAX utiltiies.
+
+	  http://outernet-project.github.io/bottle-utils/

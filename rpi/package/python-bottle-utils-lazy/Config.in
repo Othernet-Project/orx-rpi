@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PYTHON_BOTTLE_UTILS_LAZY
+	bool "python-bottle-utils-lazy"
+	depends on BR2_PACKAGE_PYTHON_BOTTLE
+	select BR2_PACKAGE_PYTHON_BOTTLE_UTILS_COMMON
+	help
+	  Bottle Utils is a collection of loosely related packages for
+	  developing web applications using Bottle web framework. This
+	  package contains utilities for lazy evaluation.
+
+	  http://outernet-project.github.io/bottle-utils/
