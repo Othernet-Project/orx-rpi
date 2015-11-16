@@ -3,19 +3,21 @@
 DAEMON=/usr/sbin/ondd
 ONDD_PID=/var/run/ondd.pid
 ONDD_OUT=/mnt/data/downloads
+ONDD_CACHE=/mnt/persit/cache
 FRONTEND=/dev/dvb/adapter0/frontend0
 
 case "$1" in
     start)
         [ -f $ONDD_PID ] && exit 0
         echo -n "Starting ondd: "
+        mkdir -p $ONDD_CACHE
         if [ ! -c $FRONTEND ]
         then
             echo "FAIL"
             exit 0
         fi
         start-stop-daemon -S -q -p $ONDD_PID -x $DAEMON \
-            -- -d --pid-file $ONDD_PID -o $ONDD_OUT
+            -- -d --pid-file $ONDD_PID -o $ONDD_OUT -c $ONDD_CACHE
         if [ $? = 0 ]
         then
             echo "OK"
