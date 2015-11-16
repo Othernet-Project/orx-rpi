@@ -2,7 +2,7 @@
 
 DEVNAME=mmcblk0
 SDCARD=/dev/${DEVNAME}
-ROOT_PART=${SDCARD}p1
+BOOT_PART=${SDCARD}p1
 CONF_PART=${SDCARD}p2
 LOG_PART=${SDCARD}p3
 DATA_PART=${SDCARD}p4
@@ -39,9 +39,9 @@ relpath() {
 mkparts() {
     # Wait for the device to appear
     maxtries=3
-    until [ -b $ROOT_PART ]
+    until [ -b $BOOT_PART ]
     do
-        log "Waiting for SD card root partition to appear at $ROOT_PART"
+        log "Waiting for SD card root partition to appear at $BOOT_PART"
         sleep 2
         maxtries=$(($maxtries - 1))
         if [ $maxtries -lt 1 ]
@@ -57,6 +57,8 @@ mkparts() {
     else
         log "No data partition found on $DATA_PART, continuing with setup"
     fi
+    log "Unmounting boot partition if mounted"
+    umount $BOOT_PART 2>&1 >> $SETUP_LOG
     # Partition and format the card
     log "Preparing the SD card"
     fdisk $SDCARD <<EOF >> $SETUP_LOG
@@ -76,10 +78,12 @@ p
 
 w
 EOF
+    log "Reloading partition table"
+    hdparm -z $SDCARD 2>&1 >> $SETUP_LOG || return 1
     log "Formatting the newly created partitions"
-    mkfs.ext4 $CONF_PART >> $SETUP_LOG || return 1
-    mkfs.ext4 $LOG_PART >> $SETUP_LOG || return 1
-    mkfs.ext4 $DATA_PART >> $SETUP_LOG || return 1
+    mkfs.ext4 $CONF_PART 2>&1 >> $SETUP_LOG || return 1
+    mkfs.ext4 $LOG_PART 2>&1 >> $SETUP_LOG || return 1
+    mkfs.ext4 $DATA_PART 2>&1 >> $SETUP_LOG || return 1
     return 0
 }
 
