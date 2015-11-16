@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_LIBRARIAN_ONDD
+	bool "python-librarian-ondd"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
+    select BR2_PACKAGE_PYTHON_LIBRARIAN_DASHBOARD
+	help
+      Librarian ONDD (tuner) configuration
+
+	  https://github.com/Outernet-Project/librarian-ondd/

@@ -3,11 +3,11 @@ BOARD = $(B)
 BOARD_DIR = ./$(BOARD)
 VERSION := $(shell cat $(BOARD_DIR)/version)
 PLATFORM := $(shell cat $(BOARD_DIR)/platform)
-IMAGE_FILE := $(PLATFORM)-$(VERSION).img
+IMAGE_FILE := images/$(PLATFORM)-$(VERSION).img
 IMAGE_FILE_GZ = $(IMAGE_FILE).gz
 IMAGE_FILE_ZIP = $(IMAGE_FILE).zip
 IMAGE_FILE_MD5SUM = $(IMAGE_FILE).md5
-UPDATE_ZIP = $(PLATFORM)-update-$(VERSION).zip
+UPDATE_ZIP = images/$(PLATFORM)-update-$(VERSION).zip
 
 SD_CARD := /dev/sdb
 
@@ -16,11 +16,12 @@ CONFIG = $(BUILDROOT)/.config
 OUTPUT = $(BUILDROOT)/output
 IMAGES_DIR = $(OUTPUT)/images
 KERNEL_IMAGE = $(IMAGES_DIR)/zImage
+TOOLS_DIR = tools
 
 EXTERNAL = .$(BOARD_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
 
-.PHONY: clean build
+.PHONY: default version build sdcard gzimage zipimage update image menuconfig linux-menuconfig busybox-menuconfig saveconfig config help clean-build clean
 
 default: build
 
@@ -36,20 +37,20 @@ sdcard: $(SD_CARD) $(IMAGE_FILE)
 
 gzimage: $(IMAGE_FILE)
 	gzip $(IMAGE_FILE)
-	md5sum $(IMAGE_FILE_GZ) > $(IMAGE_FILE_GZ).md5
+	md5sum $(IMAGE_FILE_GZ) | sed 's|images/||' > $(IMAGE_FILE_GZ).md5
 
 zipimage: $(IMAGE_FILE)
-	zip $(IMAGE_FILE_ZIP) $(IMAGE_FILE)
-	md5sum $(IMAGE_FILE_ZIP) > $(IMAGE_FILE_ZIP).md5
+	zip -j $(IMAGE_FILE_ZIP) $<
+	md5sum $(IMAGE_FILE_ZIP) | sed 's|images/||' > $(IMAGE_FILE_ZIP).md5
 
 update: $(KERNEL_IMAGE)
-	zip $(UPDATE_ZIP) $<
-	md5sum $(UPDATE_ZIP) > $(UPDATE_ZIP).md5
+	zip -j $(UPDATE_ZIP) $<
+	md5sum $(UPDATE_ZIP) | sed 's|images/||' > $(UPDATE_ZIP).md5
 
 image: $(IMAGE_FILE)
 
 $(IMAGE_FILE): $(KERNEL_IMAGE)
-	@$(BOARD_DIR)/tools/mkimage.sh
+	@$(TOOLS_DIR)/mkimage.sh "$@"
 
 $(KERNEL_IMAGE): $(CONFIG)
 	@make -C $(BUILDROOT) 
@@ -76,17 +77,9 @@ $(CONFIG):
 help:
 	@cat HELP
 
-clean-linux:
-	@make -C $(OUTPUT)/build/linux-custom clean
-
-clean-librarian:
-	@rm -rf $(OUTPUT)/build/python-librarian
-
 clean-build:
 	@-rm $(KERNEL_IMAGE)
 	@-rm $(IMAGES_DIR)/rootfs*
-	@-rm $(IMAGE_FILE)*
 
 clean:
 	@make -C $(BUILDROOT) clean
-	@-rm $(IMAGE_FILE)*

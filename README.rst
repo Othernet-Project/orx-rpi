@@ -33,6 +33,7 @@ The following should be installed on the build box:
 - build tools gcc, make, etc
 - util-linux
 - git
+- hg (mercurial)
 - libstdc++6 32-bit (on 64-bit systems)
 
 Also required for creating the SD card image:
@@ -50,40 +51,9 @@ Cloning the repository
 Compiling the toolchain
 =======================
 
-Before you can build the toolchain, you may need to install a few extra
-packages. For example, on Ubuntu 14.04, these include:
-
-- build-essential
-- gperf
-- automake
-- bison
-- libncurses5-dev
-- texinfo
-
-Running the configure script as described in the following text may give you
-hints about any missing packages.
-
-If you are on Windows, and are building the toolchain in a virtual machine,
-make sure it has plenty of storage and memory. You may need more than 40GB of
-virtual hard drive space.
-
-The toolchain confiuration supplied with this code. To build, run the following
-commands::
-
-    $ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.20.0.tar.bz2
-    $ tar xvf crosstool-ng-1.20.0.tar.bz2
-    $ cd crosstool-ng-1.12.0
-    $ ./configure --enable-local
-    $ cp path/to/orx-buildroot/rpi/toolchain/crosstool-ng.rpi-armv6hf-gcc-4.9 .config
-    $ ./ct-ng build
-
-The toolchain will be installed in `~/x-tools/arm-rpi-linux-gnueabihf`. The
-default Buildroot configuration for this build is configured to look for the
-toolchain in `/opt/toolchains`, so unless you want to customize that, it is
-recommended to copy it there::
-
-    $ sudo mkdir -p /opt/toolchains
-    $ sudo cp -r ~/x-tools/arm-rpi-linux-gnueabihf /opt/toolchains
+Toolchain is now compiled during build, and separate (external) toolchain is no
+longer required. If you've built ORx in the past, feel free to remove the old
+Crosstool-NG-based toolchain if you don't need it.
 
 Building
 ========
@@ -111,9 +81,6 @@ This creates an image for Raspberry Pi v1. To build for Raspberry Pi v2 using
 the ``rpi2`` overlay, use the B environment variable::
 
     $ make B=rpi2
-
-.. note::
-    RPi 2 support is experimental and untested.
 
 Copying the image file to SD card
 =================================
@@ -169,11 +136,7 @@ created:
 - ``/dev/mmcblk0p4`` mounted on ``/mnt/data`` for storing downloaded content
 
 The first partition, together with second and third, take up approximately
-100MB of the SD card, while the last partition will use the remaining space.
-
-The kernel is stripped down to minimum necessary to boot the system and use
-tuners, WiFi dongles, and storage devices. Other classes of devices may not
-work.
+140MB of the SD card, while the last partition will use the remaining space.
 
 When updating the system, it is enough to copy the new ``zImage`` file to the
 first partition instead of creating a new card.

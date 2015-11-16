@@ -1,7 +1,5 @@
 #!/bin/sh
 
-source /opt/lib/storage.sh
-
 DEVNAME=mmcblk0
 SDCARD=/dev/${DEVNAME}
 ROOT_PART=${SDCARD}p1
@@ -11,30 +9,32 @@ DATA_PART=${SDCARD}p4
 DATA_DIR=/mnt/data
 CONF_PART_SIZE=16M
 LOG_PART_SIZE=40M
-CONF_DIR=/opt/orx
-BACKUP_DIR=/tmp/cfgbck
+CONF_DIR=/mnt/persist
 SETUP_LOG=/tmp/setup
+
+PERSISTENT="/etc/shadow
+/etc/group
+/etc/profile
+/etc/hostapd.conf
+/etc/dnsmasq.conf
+/etc/fsal.ini
+/etc/librarian.ini
+/etc/ondd.conf
+/etc/fstab
+/etc/sudoers
+/etc/profile
+/etc/dropbear
+/etc/network"
 
 log() {
     msg=$1
     echo "[$(date)] $1" >> $SETUP_LOG
 }
 
-backup_confs() {
-    log "Backing up default configuration"
-    mkdir -p $BACKUP_DIR
-    cp -ra $CONF_DIR/* $BACKUP_DIR
-}
-
-restore_confs() {
-    log "Restoring default configuration to new configuration partition"
-    cp -ra $BACKUP_DIR/* $CONF_DIR
-}
-
-chkparts() {
-    log "Checking partitions"
-    e2fsck -y $CONF_PART >> $SETUP_LOG
-    e2fsck -y $LOG_PART >> $SETUP_LOG
+relpath() {
+    path=$1
+    par=$2
+    echo ${path##$par/}
 }
 
 mkparts() {
@@ -78,86 +78,71 @@ p
 w
 EOF
     log "Formatting the newly created partitions"
-    mkfs.ext2 $CONF_PART >> $SETUP_LOG || return 1
-    mkfs.ext2 $LOG_PART >> $SETUP_LOG || return 1
+    mkfs.ext4 $CONF_PART >> $SETUP_LOG || return 1
+    mkfs.ext4 $LOG_PART >> $SETUP_LOG || return 1
     mkfs.ext4 $DATA_PART >> $SETUP_LOG || return 1
-    chkparts
-    log "Mounting the created partitions"
-    mount -a || return 1
-    log "Preparing the download directories"
-    mkdir -p /mnt/data/downloads/content
-    mkdir -p /mnt/data/downloads/files
-    mkdir -p /mnt/data/downloads/updates
-    mkdir -p /mnt/data/library
-    mkdir -p /mnt/data/db
     return 0
 }
 
-use_extstore() {
-    log "Preparing external storage"
-    device=$1
-    if check_mounted_ext $device
-    then
-        log "$device already mounted as external storage"
-    fi
-    mkdir -p /mnt/tmp
-    log "Mounting $dev to temporary mount point"
-    mount $dev /mnt/tmp
-    if prepstorage $dev /mnt/tmp
-    then
-        log "Mounted $dev as external storage"
-        rm -rf /mnt/tmp
-        return 0
-    else
-        log "$dev could not be mounted as external storage"
-        umount /mnt/tmp || true
-        rm -rf /mnt/tmp
-        return 1
-    fi
-}
-
-find_extstore() {
-    for dev in /dev/sd[a-z]*
+persist() {
+    log "Setting up persistent configuration"
+    for path in $PERSISTENT
     do
-        if checklabel $dev
+        relp=$(relpath "$path" /etc)
+        target="$CONF_DIR/$relp"
+        target_dir=$(dirname "$target")
+        if ! [ -e "$target" ]
         then
-            log "$dev has label matching external storage"
-            use_extstore $dev && return 0
-        else
-            log "$dev does not look like external storage"
+            mkdir -p "$target_dir"
+            log "Copying $path -> $target"
+            # If it's a regular file, we copy it as is
+            if [ -f "$c" ]
+            then
+                cp -a "$path" "$target"
+            else
+                cp -R "$path" "$target"
+            fi
         fi
+        log "Removing $path"
+        rm -rf "$path"
+        ln -s "$target" "$path"
+        log "Linked $target -> $path"
     done
-    log "No external storage units found"
+    # Make sure there's no shadow+ file in the persistent storage as this can 
+    # sometimes happen when power is lost right after setting a password and 
+    # subsequently disable setting passwords.
+    rm "$CONF_DIR/shadow+"
 }
 
 case "$1" in
     start)
         echo -n "Starting preparation: "
-        backup_confs
         mkparts
         case $? in
             0)
+                log "Mounting the created partitions"
+                mount -a || (echo FAIL && exit 1)
+                log "Preparing the directories"
+                mkdir -p /mnt/data/downloads
+                mkdir -p /mnt/data/fsal
+                mkdir -p /mnt/data/librarian
                 echo OK
-                restore_confs
-                find_extstore
                 ;;
             1)
                 echo FAIL
-                rm -rf $BACKUP_DIR || true
+                exit 1
                 ;;
             2)
-                chkparts
-                mount -a || true
-                find_extstore
                 echo SKIPPED
-                rm -rf $BACKUP_DIR || true
                 ;;
         esac
-        cp $SETUP_LOG /var/log
+        persist
+        cp $SETUP_LOG /var/log/
         ;;
     *)
         echo "Usage: $0 {start}"
         exit 1
+        ;;
 esac
 
 exit 0

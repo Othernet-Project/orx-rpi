@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PYTHON_HWD
+	bool "python-hwd"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON_NETIFACES
+    select BR2_PACKAGE_PYTHON_PYUDEV
+	help
+      hwd wraps around pyudev‘s Device objects to provide functionality
+      specific to different types of hardware. 
+
+	  https://github.com/Outernet-Project/hwd
