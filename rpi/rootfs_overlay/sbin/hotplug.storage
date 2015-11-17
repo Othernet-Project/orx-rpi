@@ -1,0 +1,398 @@
+#!/usr/bin/python2
+
+import os
+import sys
+import stat
+import time
+import glob
+import shutil
+import syslog
+from contextlib import contextmanager
+from subprocess import call, check_output as ocall, CalledProcessError
+
+import mount
+
+# General
+DEBUG = True
+CP = '/bin/cp'
+LOCALE = 'en_US.UTF-8'
+
+# Filesystems and mounting
+MOUNT_BASE = '/mnt'
+EXT_LABEL = 'ext_store'
+DATADIR = os.environ.get('OUTERNET_DATA', '/mnt/data')
+CHECK_PROGS = {
+    'ext2': '/usr/sbin/fsck.ext2',
+    'ext3': '/usr/sbin/fsck.ext3',
+    'ext4': '/usr/sbin/fsck.ext4',
+    'vfat': '/sbin/fsck.fat',
+}
+DEFAULT_MOUNT_OPTS = 'defaults'
+MOUNT_OPTS = {
+    'ntfs': 'windows_names,fmask=133,dmask=022,recover',
+    'vfat': 'utf8',
+}
+
+# Platform
+PLATFORM = '/etc/platform'
+EXT_PLATFORM_FILE = '.platform'
+
+# Services
+SERVICE_CMD = '/etc/init.d/{}'
+SERVICES = ['S90ondd', 'S91librarian']
+PIDFILES = {
+    'S90ondd': '/var/run/ondd.pid',
+    'S91librarian': '/var/run/librarian.pid'
+}
+
+# Upgrade
+UPGRADE_FILE_EXT = '.pkg'
+UPGRADE_EXEC = '/usr/sbin/pkgtool'
+
+# Directory Structure Migration
+MIGRATE = (
+    ('librarian/zipballs', 'legacy'),
+    ('downloads/files', ''),
+)
+CLEANUP = (
+    'librarian',
+    'downloads',
+)
+
+
+def log_err(msg):
+    syslog.syslog(syslog.LOG_ERR, msg)
+
+
+def log_info(msg):
+    syslog.syslog(msg)
+
+
+def log_dbg(msg):
+    if not DEBUG:
+        return
+    syslog.syslog(syslog.LOG_DEBUG, msg)
+
+
+def log_warn(msg):
+    syslog.syslog(syslog.LOG_WARNING, msg)
+
+
+def get_mountpoint(devname):
+    for entry in mount.get_mtab():
+        if entry.dev == devname:
+            return entry.mdir
+    return ''
+
+
+def get_mount_opts(fs, extra_opts=None):
+    opts = MOUNT_OPTS.get(fs, DEFAULT_MOUNT_OPTS)
+    if extra_opts:
+        opts += ',' + extra_opts
+    return opts
+
+
+def get_upgrade_path(mdir):
+    return os.path.join(mdir, get_platform() + UPGRADE_FILE_EXT)
+
+
+def is_ext_storage(label):
+    if not label:
+        return False
+    return label.lower() == EXT_LABEL
+
+
+def is_upgrade(mdir):
+    upgrade_path = get_upgrade_path(mdir)
+    return os.path.isfile(upgrade_path)
+
+
+def get_platform():
+    with open(PLATFORM, 'r') as f:
+        platform = f.read()
+    return platform.strip()
+
+
+def get_ext_platform(mdir):
+    platform_file = os.path.join(mdir, EXT_PLATFORM_FILE)
+    if not os.path.exists(platform_file):
+        return ''
+    with open(platform_file, 'r') as f:
+        platform = f.read()
+    return platform.strip()
+
+
+def set_ext_platform(mdir):
+    platform_file = os.path.join(mdir, EXT_PLATFORM_FILE)
+    log_dbg('Writing platform file to external storage')
+    with open(platform_file, 'w') as f:
+        f.write(get_platform())
+
+
+def ensure_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def movetree(src, dst):
+    ensure_dir(dst)
+    for item in glob.iglob(os.path.join(src, '*')):
+        shutil.move(item, dst)
+
+
+def relocate_data(mdir):
+    for (src, dst) in MIGRATE:
+        src_path = os.path.join(mdir, src)
+        dst_path = os.path.join(mdir, dst)
+        if os.path.exists(src_path):
+            log_dbg('Copying {} into {}'.format(src_path, dst_path))
+            movetree(src_path, dst_path)
+
+
+def delete_obsolete(mdir):
+    for item in CLEANUP:
+        path = os.path.join(mdir, item)
+        if os.path.exists(path):
+            log_dbg('Deleting {}'.format(path))
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.unlink(path)
+
+
+def migrate_structure(mdir):
+    # move data that needs to be migrated to the specified locations
+    relocate_data(mdir)
+    # delete obsolete data
+    delete_obsolete(mdir)
+
+
+def copy_contents(src, target):
+    # FIXME: Consider using rsync instead of copy
+    src = src.rstrip(os.sep) + os.sep + '*'
+    log_dbg('Copying {} -> {}'.format(src, target))
+    source_files = glob.glob(src)
+    try:
+        log_dbg(ocall([CP, '-Rv'] + source_files + [target]))
+    except CalledProcessError:
+        log_warn('There were errors during copying')
+
+
+def mpath(devname):
+    devname = devname.split('/')[-1]
+    return os.path.join(MOUNT_BASE, devname)
+
+
+def check_fs(dev, fstype):
+    check_cmd = CHECK_PROGS.get(fstype)
+    if not check_cmd:
+        log_warn('Checking this filesystem is not supported')
+        return
+    log_dbg('Checking filesystem using {}'.format(check_cmd))
+    if call([check_cmd, '-p', dev]) != 0:
+        log_warn('Filesystem may have errors that could not be fixed')
+
+
+def is_service_started(service_name):
+    return os.path.exists(PIDFILES[service_name])
+
+
+def stop_service(service_name):
+    log_dbg('Stoppnig {}'.format(service_name))
+    service = SERVICE_CMD.format(service_name)
+    ret = call([service, 'stop'])
+    if ret != 0:
+        raise RuntimeError('Service {} could not be stopped'.format(
+            service_name))
+
+
+def start_service(service_name):
+    service = SERVICE_CMD.format(service_name)
+    ret = call([service, 'start'])
+    if ret != 0:
+        raise RuntimeError('Service {} could not be started'.format(
+            service_name))
+
+
+@contextmanager
+def services_stopped():
+    log_dbg('Stopping services')
+    stopped = []
+    for service in reversed(SERVICES):
+        if is_service_started(service):
+            stop_service(service)
+            stopped.insert(0, service)
+    time.sleep(3)
+    log_dbg('Services stopped')
+    try:
+        yield
+    finally:
+        log_dbg('Restarting services')
+        for service in stopped:
+            start_service(service)
+        log_dbg('Services started')
+
+
+@contextmanager
+def auto_unmount(devname):
+    try:
+        yield
+    except Exception as e:
+        mount.umount(devname)
+        # Entering error state
+        log_err('ERROR: {}'.format(e))
+        sys.exit(1)
+
+
+def is_using_ext():
+    """
+    Whether we are already using external storage.
+    """
+    platform_file = os.path.join(DATADIR, EXT_PLATFORM_FILE)
+    return os.path.isfile(platform_file)
+
+
+def use_ext(devname, mdir, fs):
+    if is_using_ext():
+        # We are already using one storage device as external storage. We can't
+        # have more than one, sorry.
+        log_info('Already using external storage. Nothing to do.')
+        return
+
+    # External storage can be blank (never used) or contain a platform file
+    # that tells us it's been used before. Blank storage does not have the
+    # EXT_PLATFORM_FILE file on it.
+
+    this_platform = get_platform()
+    ext_platform = get_ext_platform(mdir)
+    first_use = ext_platform == ''
+
+    log_dbg('External storage platform is: {}'.format(
+        ext_platform or '(none)'))
+
+    if (not first_use) and (ext_platform != this_platform):
+        # This device has been used before, but on another system. We
+        # can't use it here.
+        log_err('This storage has been used on another platform {}. Nothing '
+                'to do.'.format(ext_platform))
+        return
+
+    log_dbg('Preparing for external storage use')
+
+    with services_stopped():
+        if first_use:
+            # This external storage needs to be marked
+            log_dbg('Initializing external storage')
+            set_ext_platform(mdir)
+            log_dbg('Migrating old directory structure')
+            try:
+                migrate_structure(mdir)
+            except Exception as exc:
+                log_err('Migration failure: {0}'.format(str(exc)))
+            else:
+                log_dbg('Migration finished successfully.')
+
+        # Synchronize the internal and external storage
+        if os.path.exists(DATADIR):
+            log_dbg('Copying content from internal storage to external')
+            copy_contents(DATADIR, mdir)
+
+        # Set up the external storage
+        log_info('Using {} as external storage'.format(devname))
+
+        # Ensure that target dir actually exists
+        try:
+            os.makedirs(DATADIR)
+        except OSError:
+            pass
+        # Also make sure nothing else is mounted there
+        mount.umount(DATADIR)
+
+        # Finally mount the data dir
+        mount.umount(devname)
+        ret = mount.mount(devname, DATADIR, fs=fs,
+                          opts=MOUNT_OPTS.get(fs, DEFAULT_MOUNT_OPTS))
+        if ret != 0:
+            raise RuntimeError('Failed to remount as data storage')
+
+
+def do_upgrade(mdir):
+    upgrade_path = get_upgrade_path(mdir)
+    log_dbg('Executing system upgrade file {}'.format(upgrade_path))
+    cmd = [UPGRADE_EXEC, '-i', upgrade_path]
+    if call(cmd) != 0:
+        raise RuntimeError('Firmware upgrade unsuccessful')
+
+
+def handle_storage(devname, label, fs):
+    # First mount the partition
+    mdir = get_mountpoint(devname)
+    if not mdir:
+        # First check the filesystem
+        check_fs(devname, fs)
+        mdir = mpath(devname)
+        log_dbg('Mounting {} -> {}'.format(devname, mdir))
+        ret = mount.mount(devname, mdir, fs, opts=get_mount_opts(fs))
+        if ret != 0:
+            raise RuntimeError('Failed to mount the partition')
+
+    log_info('{} mounted at {}'.format(devname, mdir))
+
+    # Test for various handling options
+
+    if is_upgrade(mdir):
+        log_dbg('Processing system upgrade')
+        time.sleep(3)
+        do_upgrade(mdir)
+        return
+
+    if is_ext_storage(label):
+        log_dbg('Processing external storage')
+        time.sleep(3)
+        use_ext(devname, mdir, fs)
+    else:
+        log_dbg('{} unused, unmounting'.format(devname))
+        mount.umount(devname)
+
+
+def handle_storage_removal(dev, label):
+    mdir = get_mountpoint(dev)
+    with services_stopped():
+        if mount.umount(mdir) != 0:
+            raise RuntimeError('Failed to unmount {} ({})'.format(
+                dev, label or 'no label'))
+        mount.mount_all()
+
+
+def main():
+    # Set locale environment variable. Since this is a udev script, it has no
+    # access to environment variables other than device-specific ones as
+    # defined by udev. This means that locale is messed up for any process
+    # started by this script, including all processed started by
+    # ``subprocess.call`` and similar methods.
+    os.putenv('LANG', LOCALE)
+
+    # Get basic data from the environment
+    devname = os.environ.get('DEVNAME')
+    fsusage = os.environ.get('ID_FS_USAGE')
+
+    syslog.openlog('hotplug.{}'.format(devname.split('/')[-1]))
+
+    if fsusage != 'filesystem':
+        log_dbg('Partition usage is {} and cannot be used.'.format(fsusage))
+        sys.exit(0)
+
+    label = os.environ.get('ID_FS_LABEL')
+    fs = os.environ.get('ID_FS_TYPE')
+    action = os.environ.get('ACTION')
+
+    # Obtain device object and pass it to handler
+    with auto_unmount(devname):
+        if action == 'add':
+            handle_storage(devname, label, fs)
+        else:
+            handle_storage_removal(devname, label)
+
+
+if __name__ == '__main__':
+    main()

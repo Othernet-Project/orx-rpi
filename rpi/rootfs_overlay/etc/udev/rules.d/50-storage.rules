@@ -1,1 +1,1 @@
-KERNEL!="mmcblk0*", ENV{DEVTYPE}=="partition", RUN+="/sbin/hotplug.scsi"
+KERNEL!="mmcblk0*", ENV{DEVTYPE}=="partition", RUN+="/sbin/hotplug.storage"
