@@ -1,0 +1,15 @@
+diff --git a/setup.py b/setup.py
+index 0515f7c..28d9123 100644
+--- a/setup.py
++++ b/setup.py
+@@ -22,8 +22,8 @@ setup(
+     packages=find_packages(),
+     long_description=read('README.rst'),
+     install_requires=[
+-        'bottle>=0.12.7',
+-        'python-dateutil==2.2',
++        'bottle',
++        'python-dateutil',
+     ],
+     classifiers=[
+         'Development Status :: 3 - Alpha',

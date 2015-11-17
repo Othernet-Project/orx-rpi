@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index be16d3c..73c565a 100644
+--- a/setup.py
++++ b/setup.py
+@@ -26,7 +26,7 @@ setup(
+     packages=find_packages(),
+     long_description=read('README.rst'),
+     install_requires=[
+-        'bottle>=0.12.7',
++        'bottle',
+         'bottle-utils-common >=%s, <%s' % (MAJOR, NEXT),
+         'bottle-utils-lazy >=%s, <%s' % (MAJOR, NEXT),
+     ],
