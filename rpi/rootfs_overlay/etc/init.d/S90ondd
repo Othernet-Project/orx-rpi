@@ -3,7 +3,7 @@
 DAEMON=/usr/sbin/ondd
 ONDD_PID=/var/run/ondd.pid
 ONDD_OUT=/mnt/data/downloads
-ONDD_CACHE=/mnt/persist/cache
+ONDD_CACHE=/mnt/data/cache
 FRONTEND=/dev/dvb/adapter0/frontend0
 
 case "$1" in
