@@ -1,0 +1,11 @@
+diff --git a/Makefile b/Makefile
+index 00ca1cf..a5e2e92 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+ CC		 = gcc
+-CFLAGS  += -Wall -pipe
++CFLAGS  += -Wall -pipe -fpermissive
+ LIBS     = -lrt -lcrypto -lz -lstdc++
+ DEL_FILE = rm -f
+ 
