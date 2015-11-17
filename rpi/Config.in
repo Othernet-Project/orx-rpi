@@ -30,6 +30,13 @@ comment "Monitoring and reporting"
 	source "$BR2_EXTERNAL/package/monitoring/Config.in"
 endmenu
 
+menu "ONDD"
+comment "ONDD package is a placeholder. You normally do not want to enable it."
+comment "If you enable the ONDD package, you must manually download and place"
+comment "the srouce tarball into buildroot/dl."
+	source "$BR2_EXTERNAL/package/ondd/Config.in"
+endmenu
+
 menu "Dependencies"
     source "$BR2_EXTERNAL/package/python-bottle-fdsend/Config.in"
     source "$BR2_EXTERNAL/package/python-bottle-utils/Config.in"
