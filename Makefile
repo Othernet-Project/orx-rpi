@@ -1,6 +1,7 @@
 B := rpi
 BOARD = $(B)
 BOARD_DIR = ./$(BOARD)
+O = $(BOARD_DIR/output)
 VERSION := $(shell cat $(BOARD_DIR)/version)
 PLATFORM := $(shell cat $(BOARD_DIR)/platform)
 IMAGE_FILE := $(PLATFORM)-$(VERSION).img
@@ -27,7 +28,7 @@ default: build
 version:
 	@echo v$(VERSION)
 
-build: $(KERNEL_IMAGE)
+build: $(KERNEL_IMAGE) $(O)
 
 sdcard: $(SD_CARD) $(IMAGE_FILE)
 	@read -p "Press ENTER to write image to $<..."
@@ -72,6 +73,9 @@ config: $(CONFIG)
 
 $(CONFIG):
 	@make -C $(BUILDROOT) orx_defconfig
+
+$(O):
+	mkdir -p $@
 
 help:
 	@cat HELP
