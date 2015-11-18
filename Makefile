@@ -82,8 +82,8 @@ clean-build:
 	@-rm $(KERNEL_IMAGE)
 	@-rm $(IMAGES_DIR)/rootfs*
 
-clean:
-	@make -C $(BUILDROOT) clean
+clean: $(OUTPUT)
+	-rm -rf $(OUTPUT)
 
 .DEFAULT:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $@
