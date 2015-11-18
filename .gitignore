@@ -3,3 +3,6 @@
 /*.img
 /*.zip
 /*.md5
+/images
+/rpi/output
+/rpi2/output
