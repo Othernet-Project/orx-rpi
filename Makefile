@@ -72,8 +72,8 @@ saveconfig: $(OUTPUT_DIR) $(CONFIG)
 
 config: $(CONFIG)
 
-$(CONFIG):
-	@make -C $(BUILDROOT) orx_defconfig
+$(CONFIG): $(OUTPUT_DIR)
+	@make -C $(BUILDROOT) O=$< orx_defconfig
 
 $(OUTPUT_DIR):
 	mkdir -p $@
