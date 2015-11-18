@@ -1,7 +1,7 @@
 B := rpi
 BOARD = $(B)
 BOARD_DIR = ./$(BOARD)
-O = $(BOARD_DIR/output)
+O = $(BOARD_DIR)/output
 VERSION := $(shell cat $(BOARD_DIR)/version)
 PLATFORM := $(shell cat $(BOARD_DIR)/platform)
 IMAGE_FILE := images/$(PLATFORM)-$(VERSION).img
