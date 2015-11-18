@@ -52,30 +52,27 @@ image: $(IMAGE_FILE)
 $(IMAGE_FILE): $(KERNEL_IMAGE)
 	@$(BOARD_DIR)/tools/mkimage.sh
 
-$(KERNEL_IMAGE): $(OUTPUT_DIR) $(CONFIG)
-	@make -C $(BUILDROOT) O=$<
+$(KERNEL_IMAGE): $(CONFIG)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
 
-menuconfig: $(OUTPUT_DIR) $(CONFIG)
-	@make -C $(BUILDROOT) O=$< menuconfig
+menuconfig: $(CONFIG)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) menuconfig
 
-linux-menuconfig: $(OUTPUT_DIR) $(CONFIG)
-	@make -C $(BUILDROOT) O=$< linux-menuconfig
+linux-menuconfig: $(CONFIG)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) linux-menuconfig
 
-busybox-menuconfig: $(OUTPUT_DIR) $(CONFIG)
-	@make -C $(BUILDROOT) O=$< busybox-menuconfig
+busybox-menuconfig: $(CONFIG)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) busybox-menuconfig
 
-saveconfig: $(OUTPUT_DIR) $(CONFIG)
-	@make -C $(BUILDROOT) O=$< savedefconfig
-	@make -C $(BUILDROOT) O=$< linux-update-defconfig
-	@make -C $(BUILDROOT) O=$< busybox-update-config
+saveconfig: $(CONFIG)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) savedefconfig
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) linux-update-defconfig
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) busybox-update-config
 
 config: $(CONFIG)
 
-$(CONFIG): $(OUTPUT_DIR)
-	@make -C $(BUILDROOT) O=$< orx_defconfig
-
-$(OUTPUT_DIR):
-	mkdir -p $@
+$(CONFIG):
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) orx_defconfig
 
 help:
 	@cat HELP
