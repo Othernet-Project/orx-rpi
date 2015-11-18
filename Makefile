@@ -12,15 +12,15 @@ UPDATE_ZIP = images/$(PLATFORM)-update-$(VERSION).zip
 SD_CARD := /dev/sdb
 
 BUILDROOT = ./buildroot
-CONFIG = $(BUILDROOT)/.config
-OUTPUT = $(BUILDROOT)/output
+OUTPUT_DIR = ../$(BOARD)/output
+OUTPUT = $(BOARD)/output
+CONFIG = $(OUTPUT)/.config
 IMAGES_DIR = $(OUTPUT)/images
 KERNEL_IMAGE = $(IMAGES_DIR)/zImage
 TOOLS_DIR = tools
 
 EXTERNAL = .$(BOARD_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
-OUTPUT_DIR = ../$(BOARD)/output
 
 .PHONY: default version build sdcard gzimage zipimage update image menuconfig linux-menuconfig busybox-menuconfig saveconfig config help clean-build clean
 
@@ -51,7 +51,7 @@ update: $(KERNEL_IMAGE)
 image: $(IMAGE_FILE)
 
 $(IMAGE_FILE): $(KERNEL_IMAGE)
-	@$(TOOLS_DIR)/mkimage.sh "$@"
+	@$(TOOLS_DIR)/mkimage.sh "$@" "$<"
 
 $(KERNEL_IMAGE): $(CONFIG)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)

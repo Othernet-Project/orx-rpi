@@ -6,9 +6,13 @@ set -e
 SCRIPTDIR=$(dirname "$0")
 LOG=.buildlog
 
+# Args
+TARGET=$1
+KERNEL_IMAGE=$2
+
 # Image file
 IMAGE_SIZE=80M
-IMAGE_FILE=${1:="${SCRIPTDIR}../images/${PLATFORM}-${VERSION}.img"}
+IMAGE_FILE=$TARGET
 IMAGE_UID=1000
 IMAGE_GID=1000
 
@@ -17,7 +21,7 @@ LOOP=/dev/loop0
 BOOT_FS=${LOOP}p1
 
 # Misc
-OUTPUT=${SCRIPTDIR}/../buildroot/output/images
+OUTPUT=$(dirname $KERNEL_IMAGE)
 TMPDIR=tmp
 
 abort() {
@@ -66,7 +70,7 @@ cp -r $OUTPUT/rpi-firmware/* $TMPDIR || abort "Could not copy firmware files"
 rm -rf $TMPDIR/overlays || abort "Could not remove overlays"
 rm $TMPDIR/cmdline.txt || abort "Could not remove cmdline.txt"
 cp $OUTPUT/*.dtb $TMPDIR || abort "Could not copy dtb"
-cp $OUTPUT/zImage $TMPDIR || abort "Could not copy kernel image"
+cp $KERNEL_IMAGE $TMPDIR || abort "Could not copy kernel image"
 umount $BOOT_FS || quit
 echo DONE
 
