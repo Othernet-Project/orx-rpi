@@ -84,3 +84,6 @@ clean-build:
 
 clean:
 	@make -C $(BUILDROOT) clean
+
+.DEFAULT:
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $@
