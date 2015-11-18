@@ -6,7 +6,7 @@
 
 ONDD_VERSION = 2.1.0
 ONDD_SOURCE = ondd-$(ONDD_VERSION).tar.gz
-ONDD_SITE = https://outernet.is/
+ONDD_SITE = https://outernet.is
 ONDD_DEPENDENCIES = openssl
 ONDD_LICENSE = PROPRIETARY
 
