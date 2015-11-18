@@ -1,7 +1,6 @@
 B := rpi
 BOARD = $(B)
 BOARD_DIR = ./$(BOARD)
-O = $(BOARD_DIR)/output
 VERSION := $(shell cat $(BOARD_DIR)/version)
 PLATFORM := $(shell cat $(BOARD_DIR)/platform)
 IMAGE_FILE := $(PLATFORM)-$(VERSION).img
@@ -20,6 +19,7 @@ KERNEL_IMAGE = $(IMAGES_DIR)/zImage
 
 EXTERNAL = .$(BOARD_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
+OUTPUT_DIR = ../$(BOARD)/output
 
 .PHONY: clean build
 
@@ -28,7 +28,7 @@ default: build
 version:
 	@echo v$(VERSION)
 
-build: $(KERNEL_IMAGE) $(O)
+build: $(KERNEL_IMAGE)
 
 sdcard: $(SD_CARD) $(IMAGE_FILE)
 	@read -p "Press ENTER to write image to $<..."
@@ -52,29 +52,29 @@ image: $(IMAGE_FILE)
 $(IMAGE_FILE): $(KERNEL_IMAGE)
 	@$(BOARD_DIR)/tools/mkimage.sh
 
-$(KERNEL_IMAGE): $(CONFIG)
-	@make -C $(BUILDROOT) 
+$(KERNEL_IMAGE): $(OUTPUT_DIR) $(CONFIG)
+	@make -C $(BUILDROOT) O=$<
 
-menuconfig: $(CONFIG)
-	@make -C $(BUILDROOT) menuconfig
+menuconfig: $(OUTPUT_DIR) $(CONFIG)
+	@make -C $(BUILDROOT) O=$< menuconfig
 
-linux-menuconfig: $(CONFIG)
-	@make -C $(BUILDROOT) linux-menuconfig
+linux-menuconfig: $(OUTPUT_DIR) $(CONFIG)
+	@make -C $(BUILDROOT) O=$< linux-menuconfig
 
-busybox-menuconfig: $(CONFIG)
-	@make -C $(BUILDROOT) busybox-menuconfig
+busybox-menuconfig: $(OUTPUT_DIR) $(CONFIG)
+	@make -C $(BUILDROOT) O=$< busybox-menuconfig
 
-saveconfig: $(CONFIG)
-	@make -C $(BUILDROOT) savedefconfig
-	@make -C $(BUILDROOT) linux-update-defconfig
-	@make -C $(BUILDROOT) busybox-update-config
+saveconfig: $(OUTPUT_DIR) $(CONFIG)
+	@make -C $(BUILDROOT) O=$< savedefconfig
+	@make -C $(BUILDROOT) O=$< linux-update-defconfig
+	@make -C $(BUILDROOT) O=$< busybox-update-config
 
 config: $(CONFIG)
 
 $(CONFIG):
 	@make -C $(BUILDROOT) orx_defconfig
 
-$(O):
+$(OUTPUT_DIR):
 	mkdir -p $@
 
 help:
