@@ -69,8 +69,7 @@ Once build completes, you can build the image file::
 The latter will execute the script `rpi/tools/mkimage.sh`. This script runs
 several commands that require root privileges, so the target is separated.
 
-Once build completes, you filld the image in the root of the repository named
-`ORxPi-x.y.z.img`.
+Once build completes, you will find the image file in the ``images`` directory.
 
 To get more help on available make targets, type::
 
