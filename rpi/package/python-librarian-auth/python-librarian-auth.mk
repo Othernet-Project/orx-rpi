@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_AUTH_VERSION = d86266d30be468405e6469179573c3ee9175173c
+PYTHON_LIBRARIAN_AUTH_VERSION = 4abc64c30aa0df8e0d8fe53d25c87e73fe1cc6d8
 PYTHON_LIBRARIAN_AUTH_SOURCE = $(PYTHON_LIBRARIAN_AUTH_VERSION).tar.gz
 PYTHON_LIBRARIAN_AUTH_SITE = https://github.com/Outernet-Project/librarian-auth/archive
 PYTHON_LIBRARIAN_AUTH_LICENSE = GPL
