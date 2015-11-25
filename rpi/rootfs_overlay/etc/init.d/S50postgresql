@@ -8,10 +8,7 @@ POSTGRES_USER=postgres
 
 umask 077
 
-if [ ! -f /var/lib/pgsql/PG_VERSION ]; then
-    echo "Creating postgres user..."
-    addgroup $POSTGRES_USER || true
-    adduser -H -G $POSTGRES_USER $POSTGRES_USER || true
+if [ ! -f $POSTGRES_DBDIR/PG_VERSION ]; then
     echo "Initializing postgresql database..."
     mkdir -p $POSTGRES_DBDIR
     chown postgres.postgres $POSTGRES_DBDIR
