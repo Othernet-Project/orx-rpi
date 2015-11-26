@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DAEMON=/usr/sbin/monitor
-PERSIST_DIR=/opt/orx
+PERSIST_DIR=/mnt/persist
 PLATFORM=$(cat /etc/platform)
 MON_PID=/var/run/monitoring.pid
 MON_KEY=${PERSIST_DIR}/monitoring.key
