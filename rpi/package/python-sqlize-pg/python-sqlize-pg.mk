@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_SQLIZE_PG_VERSION = e1872784939af1cc351458cb0c4e81702a8b30c6
+PYTHON_SQLIZE_PG_VERSION = 455f610f6a29aef0f114325d4dbd4c9b0817359c
 PYTHON_SQLIZE_PG_SOURCE = $(PYTHON_SQLIZE_PG_VERSION).tar.gz
 PYTHON_SQLIZE_PG_SITE = https://github.com/Outernet-Project/sqlize-pg/archive
 PYTHON_SQLIZE_PG_LICENSE = GPL
