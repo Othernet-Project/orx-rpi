@@ -59,7 +59,7 @@ PROGRESS_BLINK_INTERVAL = 100
 
 # Directory Structure Migration
 MIGRATE = (
-    ('librarian/zipballs', 'legacy'),
+    ('library', 'legacy'),
     ('downloads/files', ''),
 )
 CLEANUP = (
