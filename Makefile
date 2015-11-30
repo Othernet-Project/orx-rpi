@@ -83,7 +83,7 @@ clean-build:
 	@-rm $(IMAGES_DIR)/rootfs*
 
 clean:
-	@make -C $(BUILDROOT) clean
+	rm -rf $(OUTPUT)
 
 .DEFAULT:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $@
