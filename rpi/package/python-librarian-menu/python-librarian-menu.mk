@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_MENU_VERSION = 04da5cf67b367f5d04a25a5ca527ccdd36febd6f
+PYTHON_LIBRARIAN_MENU_VERSION = 443f130ed01b0e8e8d640cffe701016c810f0e33
 PYTHON_LIBRARIAN_MENU_SOURCE = $(PYTHON_LIBRARIAN_MENU_VERSION).tar.gz
 PYTHON_LIBRARIAN_MENU_SITE = https://github.com/Outernet-Project/librarian-menu/archive
 PYTHON_LIBRARIAN_MENU_LICENSE = GPL
