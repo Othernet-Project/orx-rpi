@@ -367,7 +367,7 @@ def handle_storage(devname, label, fs):
 def handle_storage_removal(dev, label):
     mdir = get_mountpoint(dev)
     with services_stopped():
-        if mount.umount(mdir) != 0:
+        if mount.umount(mdir, force=True) != 0:
             raise RuntimeError('Failed to unmount {} ({})'.format(
                 dev, label or 'no label'))
 
