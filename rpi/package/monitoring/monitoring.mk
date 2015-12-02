@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MONITORING_VERSION = 1536ec66547345b8bdba6fb756fd15a1b2e08f0c
+MONITORING_VERSION = 9e8488e1e2574067e5a3656ebe7029ddcc962c42
 MONITORING_SOURCE = $(MONITORING_VERSION).tar.gz
 MONITORING_SITE = https://github.com/Outernet-Project/monitoring/archive
 MONITORING_LICENSE = GPL
