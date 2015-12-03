@@ -26,6 +26,12 @@ PERSISTENT="/etc/shadow
 /etc/dropbear
 /etc/network"
 
+# Old stuff
+BASE=/mnt/data/downloads
+FILES=${BASE}/files
+CONTENT=${BASE}/content
+CACHE=${BASE}/.cache
+
 log() {
     msg=$1
     echo "[$(date)] $1" >> $SETUP_LOG
@@ -35,6 +41,21 @@ relpath() {
     path=$1
     par=$2
     echo ${path##$par/}
+}
+
+migrate_legacy() {
+    if [ -d "$CACHE" ]; then
+        rm -rf "$CACHE"
+        log "Removed cache dir"
+    fi
+    if [ -d  "$CONTENT" ]; then
+        rm -rf "$CONTENT"
+        log "Removed content dir"
+    fi
+    if [ -d "$FILES" ]; then
+        mv "$CONTENT"/* "$BASE"/
+        log "Migrated files dir"
+    fi
 }
 
 mkparts() {
@@ -141,6 +162,7 @@ case "$1" in
                 ;;
         esac
         persist
+        migrate_legacy
         cp $SETUP_LOG /var/log/
         ;;
     *)
