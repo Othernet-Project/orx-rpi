@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_BOTTLE_UTILS_VERSION = efaa41b455d07d141943469db49d538dd7762605
+PYTHON_BOTTLE_UTILS_VERSION = 712eae2d53a37b52b1210d4524bfa1f1f8c7b973
 PYTHON_BOTTLE_UTILS_SOURCE = $(PYTHON_BOTTLE_UTILS_VERSION).tar.gz
 PYTHON_BOTTLE_UTILS_SITE = https://github.com/Outernet-Project/bottle-utils/archive
 PYTHON_BOTTLE_UTILS_LICENSE = GPL

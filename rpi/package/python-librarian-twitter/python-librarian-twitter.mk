@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_TWITTER_VERSION = 95e82dc01e41ec1eb836282c4d107849fcf97a0e
+PYTHON_LIBRARIAN_TWITTER_VERSION = 2f5e1eb63655862e1397d629d11487234cb0ceb0
 PYTHON_LIBRARIAN_TWITTER_SOURCE = $(PYTHON_LIBRARIAN_TWITTER_VERSION).tar.gz
 PYTHON_LIBRARIAN_TWITTER_SITE = https://github.com/Outernet-Project/librarian-twitter/archive
 PYTHON_LIBRARIAN_TWITTER_LICENSE = GPL
