@@ -53,7 +53,8 @@ migrate_legacy() {
         log "Removed content dir"
     fi
     if [ -d "$FILES" ]; then
-        mv "$CONTENT"/* "$BASE"/
+        mv "$FILES"/* "$BASE"/
+        rm -rf "$FILES"
         log "Migrated files dir"
     fi
 }
