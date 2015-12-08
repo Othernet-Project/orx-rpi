@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_CAPTIVE_VERSION = 48dc64aeb1ccad1c86a9a8068cfff34444ad1afa
+PYTHON_LIBRARIAN_CAPTIVE_VERSION = 00b09dbc639db2adaf2d9b255b20c3c80dfdcaf4
 PYTHON_LIBRARIAN_CAPTIVE_SOURCE = $(PYTHON_LIBRARIAN_CAPTIVE_VERSION).tar.gz
 PYTHON_LIBRARIAN_CAPTIVE_SITE = https://github.com/Outernet-Project/librarian-captive/archive
 PYTHON_LIBRARIAN_CAPTIVE_LICENSE = GPL
