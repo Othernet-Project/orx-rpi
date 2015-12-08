@@ -31,6 +31,7 @@ comment "Monitoring and reporting"
 endmenu
 
 menu "ONDD"
+	source "$BR2_EXTERNAL/package/python-ondd-ipc/Config.in"
 comment "ONDD package is a placeholder. You normally do not want to enable it."
 comment "If you enable the ONDD package, you must manually download and place"
 comment "the srouce tarball into buildroot/dl."
