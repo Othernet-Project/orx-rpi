@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_CONTENT_VERSION = 8a53b833cb2707d6012a054825c76ce986a6d574
+PYTHON_LIBRARIAN_CONTENT_VERSION = ca700c75d1427ea0ae54d13aa893a83419c9a0a8
 PYTHON_LIBRARIAN_CONTENT_SOURCE = $(PYTHON_LIBRARIAN_CONTENT_VERSION).tar.gz
 PYTHON_LIBRARIAN_CONTENT_SITE = https://github.com/Outernet-Project/librarian-content/archive
 PYTHON_LIBRARIAN_CONTENT_LICENSE = GPL
