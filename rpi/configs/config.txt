@@ -1,0 +1,19 @@
+# See http://buildroot.org/manual.html#rootfs-custom
+# and http://elinux.org/RPiconfig for a description of config.txt syntax
+
+kernel=zImage
+
+# Disable overscan assuming the display supports displaying the full resolution
+# If the text shown on the screen disappears off the edge, comment this out
+disable_overscan=1
+
+# How much memory in MB to assign to the GPU on Pi models having
+# 256, 512 or 1024 MB total memory
+gpu_mem_256=100
+gpu_mem_512=100
+gpu_mem_1024=100
+
+# Makes HDMI out work with some exotic setups like using HDMI-VGA adapters. If
+# you are having issues with HDMI output, try commenting the lines below.
+hdmi_drive=1
+hdmi_force_hotplug=1
