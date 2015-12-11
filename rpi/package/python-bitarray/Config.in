@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_BITARRAY
+	bool "python-bitarray"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  This module provides an object type which efficiently represents an array
+	  of booleans. Bitarrays are sequence types and behave very much like usual
+	  lists.
+
+	  https://github.com/ilanschnell/bitarray/
