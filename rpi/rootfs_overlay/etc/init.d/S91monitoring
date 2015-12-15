@@ -22,7 +22,8 @@ case "$1" in
 
         echo -n "Starting monitoring: "
         start-stop-daemon -S -q -p $MON_PID -x $DAEMON \
-            -- -P $MON_PID -u $MON_URL -k $MON_KEY -b $MON_BUF --setup $LIBRARIAN_SETUP &
+            -- -P $MON_PID -u $MON_URL -k $MON_KEY -b $MON_BUF -a $MON_ACT \
+            --platform "$PLATFORM" --setup $LIBRARIAN_SETUP &
         if [ $? = 0 ]
         then
             echo "OK"
