@@ -28,7 +28,7 @@ case "$1" in
         then
             echo "OK"
         else
-            [ -f $ONDD_PID ] && rm $ONDD_PID
+            [ -f $MON_PID ] && rm $MON_PID
             echo "FAIL"
         fi
         ;;
