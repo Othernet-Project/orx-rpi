@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DAEMON=/usr/sbin/monitor
+DAEMON=/usr/bin/monitoring-client
 PERSIST_DIR=/mnt/persist
 PLATFORM=$(cat /etc/platform)
 MON_PID=/var/run/monitoring.pid
@@ -8,13 +8,21 @@ MON_KEY=${PERSIST_DIR}/monitoring.key
 MON_ACT=${PERSIST_DIR}/monitoring.yes
 MON_BUF=${PERSIST_DIR}/monitoring.buffer
 MON_URL=http://status.outernet.is/heartbeat/v1/
+LIBRARIAN_SETUP=/mnt/data/librarian/librarian.json
 
 case "$1" in
     start)
         [ -f $MON_PID ] && exit 0
+
+        # If there is no key yet, it means monitoring is running for the first
+        # time so we create the activation file. When monitoring client runs
+        # for the first time, this key is created so the activation file will
+        # not be recreated even if user removes it before subsequent runs.
+        [ -f "$MON_KEY" ] || touch "$MON_ACT"
+
         echo -n "Starting monitoring: "
         start-stop-daemon -S -q -p $MON_PID -x $DAEMON \
-            -- -P $MON_PID -u $MON_URL -k $MON_KEY -b $MON_BUF -p $PLATFORM &
+            -- -P $MON_PID -u $MON_URL -k $MON_KEY -b $MON_BUF --setup $LIBRARIAN_SETUP &
         if [ $? = 0 ]
         then
             echo "OK"
