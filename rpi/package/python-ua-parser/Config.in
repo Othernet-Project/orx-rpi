@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_UA_PARSER
+	bool "python-ua-parser"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_PYYAML
+	help
+	  A python implementation of the UA Parser.
+
+	  https://github.com/ua-parser/uap-python
