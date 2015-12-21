@@ -7,7 +7,7 @@ MON_PID=/var/run/monitoring.pid
 MON_KEY=${PERSIST_DIR}/monitoring.key
 MON_ACT=${PERSIST_DIR}/monitoring.yes
 MON_BUF=${PERSIST_DIR}/monitoring.buffer
-MON_URL=http://status.outernet.is/heartbeat/v1/
+MON_URL=http://status-staging.outernet.is/heartbeat/v1/
 LIBRARIAN_SETUP=/mnt/data/librarian/librarian.json
 
 case "$1" in
