@@ -12,6 +12,7 @@ ONDD_LICENSE = PROPRIETARY
 
 define ONDD_INSTALL_TARGET_CMDS
 	$(MAKE) -C $(@D) INSTALL_PREFIX=$(TARGET_DIR) \
+		CFLAGS=-fpermissive \
 		CC=$(TARGET_CC) clean debug release install
 endef
 
