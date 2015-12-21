@@ -60,5 +60,6 @@ menu "Dependencies"
     source "$BR2_EXTERNAL/package/python-psycopg2/Config.in"
     source "$BR2_EXTERNAL/package/python-pyyaml/Config.in"
     source "$BR2_EXTERNAL/package/python-ua-parser/Config.in"
+    source "$BR2_EXTERNAL/package/python-user-agents/Config.in"
     source "$BR2_EXTERNAL/package/postgresql-95/Config.in"
 endmenu
