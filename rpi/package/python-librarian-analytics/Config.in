@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_LIBRARIAN_ANALYTICS
+	bool "python-librarian-analytics"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
+	select BR2_PACKAGE_PYTHON_USER_AGENTS
+	help
+	  Librarian content usage analytics
+
+	  https://github.com/Outernet-Project/librarian-analytics/

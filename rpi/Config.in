@@ -24,6 +24,7 @@ comment "Content openers"
 	source "$BR2_EXTERNAL/package/python-librarian-opener-html/Config.in"
 	source "$BR2_EXTERNAL/package/python-librarian-opener-video/Config.in"
 comment "Misc"
+	source "$BR2_EXTERNAL/package/python-librarian-analytics/Config.in"
 	source "$BR2_EXTERNAL/package/python-librarian-captive/Config.in"
 endif
 comment "Monitoring and reporting"
