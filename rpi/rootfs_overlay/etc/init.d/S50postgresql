@@ -8,16 +8,22 @@ POSTGRES_USER=postgres
 
 umask 077
 
+fixperms() {
+    chmod 700 $POSTGRES_DBDIR
+    chown -R $POSTGRES_USER.$POSTGRES_USER $POSTGRES_DBDIR
+}
+
 start() {
     if [ ! -f $POSTGRES_DBDIR/PG_VERSION ]; then
         echo "Initializing postgresql database..."
         mkdir -p $POSTGRES_DBDIR
-        chmod 700 $POSTGRES_DBDIR
+        fixperms
         su - $POSTGRES_USER -c "/usr/bin/pg_ctl initdb -D $POSTGRES_DBDIR"
         echo "done"
+    else
+        fixperms
     fi
 
-    chown -R $POSTGRES_USER.$POSTGRES_USER $POSTGRES_DBDIR
 
     printf "Starting postgresql: "
     su - postgres -c "/usr/bin/pg_ctl start -w -D $POSTGRES_DBDIR -l logfile"
