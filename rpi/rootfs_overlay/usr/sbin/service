@@ -1,0 +1,30 @@
+#!/bin/sh
+
+INIT=/etc/init.d
+
+name=$1
+action=$2
+
+usage() {
+    echo "Usage: $0 SERVICE ACTION"
+    echo 
+    echo "   SERVICE - name of the init script without the SNN prefix"
+    echo "   ACTION  - start, stop, or restart"
+    echo 
+}
+
+if [ -z "$name" ] || [ -z "$action" ]
+then
+    usage
+    exit 1
+fi
+
+script=$(ls $INIT/S??$name | head -n1)
+
+if [ ! -f "$script" ]
+then
+    echo "No service '$name' found"
+    exit 1
+fi
+
+sudo "$script" "$action"
