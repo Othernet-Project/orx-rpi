@@ -1,0 +1,41 @@
+#!/bin/sh
+
+DATA=/mnt/data
+PERS=/mnt/persist
+LOG=/var/log
+INIT=/etc/init.d/
+
+if [ $(id -u) != "0" ]
+then
+    echo "You must run this script as root."
+    exit 1
+fi
+
+echo
+echo "**********************************************************"
+echo "* WARNING:                                               *"
+echo "* This program will erase ALL DATA ON THIS DEVICE.       *"
+echo "**********************************************************"
+echo
+read -n 1 -p "Proceed with factory reset? [y/N] " yesno
+echo
+
+if [ "$yesno" != y ] && [ "$yesno" != Y ]
+then
+    exit
+fi
+
+$INIT/S91librarian stop
+$INIT/S91monitoring stop
+$INIT/S91fsal stop
+$INIT/S90ondd stop
+
+echo -n "Removing data: "
+rm -rf $DATA/*
+rm -rf $PERS/*
+rm -rf $LOG/librarian*
+rm -rf $LOG/fsal*
+echo "DONE"
+
+echo "Rebooting..."
+reboot
