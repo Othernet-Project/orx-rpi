@@ -178,7 +178,7 @@ def migrate_structure(mdir):
 
 def copy_contents(src, target):
     # FIXME: Consider using rsync instead of copy
-    src = src.rstrip(os.sep) + os.sep + '*'
+    src = src.rstrip(os.sep) + os.sep + '.'
     log_dbg('Copying {} -> {}'.format(src, target))
     source_files = glob.glob(src)
     try:
