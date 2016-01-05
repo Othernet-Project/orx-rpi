@@ -1,1 +1,0 @@
-KERNEL!="mmcblk0*", ENV{DEVTYPE}=="partition", RUN+="/sbin/hotplug.storage"

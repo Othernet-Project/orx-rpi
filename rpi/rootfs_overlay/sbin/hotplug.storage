@@ -382,13 +382,8 @@ def main():
 
     # Get basic data from the environment
     devname = os.environ.get('DEVNAME')
-    fsusage = os.environ.get('ID_FS_USAGE')
 
     syslog.openlog('hotplug.{}'.format(devname.split('/')[-1]))
-
-    if fsusage != 'filesystem':
-        log_dbg('Partition usage is {} and cannot be used.'.format(fsusage))
-        sys.exit(0)
 
     label = os.environ.get('ID_FS_LABEL')
     fs = os.environ.get('ID_FS_TYPE')
