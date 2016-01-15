@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_ZIPPIE
+	bool "python-zippie"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  A zip archive handler tool, attempting to achieve API compatibility with
+	  Pythons own zipfile module.
+
+	  https://github.com/integricho/zippie
