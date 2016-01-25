@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_ONDD_VERSION = 4021c851ae6f7bdbd170348f77e7972293949c97
+PYTHON_LIBRARIAN_ONDD_VERSION = 0d096bd057d34dd4e44239b2ffc1d77762b0ba97
 PYTHON_LIBRARIAN_ONDD_SOURCE = $(PYTHON_LIBRARIAN_ONDD_VERSION).tar.gz
 PYTHON_LIBRARIAN_ONDD_SITE = https://github.com/Outernet-Project/librarian-ondd/archive
 PYTHON_LIBRARIAN_ONDD_LICENSE = GPL
