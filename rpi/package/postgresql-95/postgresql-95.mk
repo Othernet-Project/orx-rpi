@@ -4,7 +4,7 @@
 # 
 ###############################################################################
 
-POSTGRESQL_95_VERSION = 9.5beta2
+POSTGRESQL_95_VERSION = 9.5.0
 POSTGRESQL_95_SOURCE = postgresql-$(POSTGRESQL_95_VERSION).tar.bz2
 POSTGRESQL_95_SITE = http://ftp.postgresql.org/pub/source/v$(POSTGRESQL_95_VERSION)
 POSTGRESQL_95_LICENSE = PostgreSQL
