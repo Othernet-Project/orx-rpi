@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_FSAL_VERSION = 4a6145693eb48138fefe543ca3a8fde8ac090e0d
+PYTHON_FSAL_VERSION = 49a48416ee600913a757329511f7bf1ec0083802
 PYTHON_FSAL_SOURCE = $(PYTHON_FSAL_VERSION).tar.gz
 PYTHON_FSAL_SITE = https://github.com/Outernet-Project/fsal/archive
 PYTHON_FSAL_LICENSE = GPL
