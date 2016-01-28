@@ -2,13 +2,14 @@
 
 import os
 import sys
-import stat
 import time
-import glob
 import shutil
 import syslog
 from contextlib import contextmanager
-from subprocess import call, check_output as ocall, CalledProcessError
+from subprocess import call
+
+from fsal.client import FSAL
+from ondd_ipc.ipc import ONDDClient
 
 import mount
 
@@ -18,11 +19,14 @@ CP = '/bin/cp'
 MV = '/bin/mv'
 RM = '/bin/rm'
 LOCALE = 'en_US.UTF-8'
+ONDD_SOCKET_PATH = '/var/run/ondd.ctrl'
+FSAL_SOCKET_PATH = '/var/run/fsal.ctrl'
 
 # Filesystems and mounting
 MOUNT_BASE = '/mnt'
 EXT_LABEL = 'ext_store'
-DATADIR = os.environ.get('OUTERNET_DATA', '/mnt/data/downloads')
+MAIN_STORAGE = '{}/data/downloads'.format(MOUNT_BASE)
+EXT_STORAGE = '{}/external'.format(MOUNT_BASE)
 CHECK_PROGS = {
     'ext2': '/usr/sbin/fsck.ext2',
     'ext3': '/usr/sbin/fsck.ext3',
@@ -39,23 +43,9 @@ MOUNT_OPTS = {
 PLATFORM = '/etc/platform'
 EXT_PLATFORM_FILE = '.platform'
 
-# Services
-SERVICE_CMD = '/etc/init.d/{}'
-SERVICES = ['S90ondd', 'S91fsal', 'S91librarian']
-PIDFILES = {
-    'S90ondd': '/var/run/ondd.pid',
-    'S91fsal': '/var/run/fsal.pid',
-    'S91librarian': '/var/run/librarian.pid'
-}
-
 # Upgrade
 UPGRADE_FILE_EXT = '.pkg'
 UPGRADE_EXEC = '/usr/sbin/pkgtool'
-
-# LED
-LED_CLASS = 'status'
-START_BLINK_INTERVAL = 500
-PROGRESS_BLINK_INTERVAL = 100
 
 # Directory Structure Migration
 MIGRATE = (
@@ -137,17 +127,6 @@ def set_ext_platform(mdir):
         f.write(get_platform())
 
 
-def ensure_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-
-def movetree(src, dst):
-    ensure_dir(dst)
-    for item in glob.iglob(os.path.join(src, '*')):
-        shutil.move(item, dst)
-
-
 def relocate_data(mdir):
     for (src, dst) in MIGRATE:
         src_path = os.path.join(mdir, src)
@@ -156,6 +135,8 @@ def relocate_data(mdir):
             log_dbg('Copying {} into {}'.format(src_path, dst_path))
             call([RM, dst_path])
             call([MV, src_path, dst_path])
+        else:
+            log_dbg('Nothing to import in {}'.format(src_path))
 
 
 def delete_obsolete(mdir):
@@ -176,17 +157,6 @@ def migrate_structure(mdir):
     delete_obsolete(mdir)
 
 
-def copy_contents(src, target):
-    # FIXME: Consider using rsync instead of copy
-    src = src.rstrip(os.sep) + os.sep + '.'
-    log_dbg('Copying {} -> {}'.format(src, target))
-    source_files = glob.glob(src)
-    try:
-        log_dbg(ocall([CP, '-Rv'] + source_files + [target]))
-    except CalledProcessError:
-        log_warn('There were errors during copying')
-
-
 def mpath(devname):
     devname = devname.split('/')[-1]
     return os.path.join(MOUNT_BASE, devname)
@@ -200,46 +170,6 @@ def check_fs(dev, fstype):
     log_dbg('Checking filesystem using {}'.format(check_cmd))
     if call([check_cmd, '-p', dev]) != 0:
         log_warn('Filesystem may have errors that could not be fixed')
-
-
-def is_service_started(service_name):
-    return os.path.exists(PIDFILES[service_name])
-
-
-def stop_service(service_name):
-    log_dbg('Stoppnig {}'.format(service_name))
-    service = SERVICE_CMD.format(service_name)
-    ret = call([service, 'stop'])
-    if ret != 0:
-        raise RuntimeError('Service {} could not be stopped'.format(
-            service_name))
-
-
-def start_service(service_name):
-    service = SERVICE_CMD.format(service_name)
-    ret = call([service, 'start'])
-    if ret != 0:
-        raise RuntimeError('Service {} could not be started'.format(
-            service_name))
-
-
-@contextmanager
-def services_stopped():
-    log_dbg('Stopping services')
-    stopped = []
-    for service in reversed(SERVICES):
-        if is_service_started(service):
-            stop_service(service)
-            stopped.insert(0, service)
-    time.sleep(3)
-    log_dbg('Services stopped')
-    try:
-        yield
-    finally:
-        log_dbg('Restarting services')
-        for service in stopped:
-            start_service(service)
-        log_dbg('Services started')
 
 
 @contextmanager
@@ -257,8 +187,20 @@ def is_using_ext():
     """
     Whether we are already using external storage.
     """
-    platform_file = os.path.join(DATADIR, EXT_PLATFORM_FILE)
+    platform_file = os.path.join(EXT_STORAGE, EXT_PLATFORM_FILE)
     return os.path.isfile(platform_file)
+
+
+def switch_storage(path):
+    log_dbg('Switching ONDD output to {}'.format(path))
+    ondd_client = ONDDClient(ONDD_SOCKET_PATH)
+    response = ondd_client.set_output_path(path)
+    if response != '204':
+        raise RuntimeError('Could not switch output path')
+    log_dbg('Refreshing FSAL index')
+    fsal_client = FSAL(FSAL_SOCKET_PATH)
+    fsal_client.refresh()
+    log_dbg('Finished switching storage device')
 
 
 def use_ext(devname, mdir, fs):
@@ -288,41 +230,36 @@ def use_ext(devname, mdir, fs):
 
     log_dbg('Preparing for external storage use')
 
-    with services_stopped():
-        if first_use:
-            # This external storage needs to be marked
-            log_dbg('Initializing external storage')
-            set_ext_platform(mdir)
-            log_dbg('Migrating old directory structure')
-            try:
-                migrate_structure(mdir)
-            except Exception as exc:
-                log_err('Migration failure: {0}'.format(str(exc)))
-            else:
-                log_dbg('Migration finished successfully.')
-
-        # Synchronize the internal and external storage
-        if os.path.exists(DATADIR):
-            log_dbg('Copying content from internal storage to external')
-            copy_contents(DATADIR, mdir)
-
-        # Set up the external storage
-        log_info('Using {} as external storage'.format(devname))
-
-        # Ensure that target dir actually exists
+    if first_use:
+        # This external storage needs to be marked
+        log_dbg('Initializing external storage')
+        set_ext_platform(mdir)
+        log_dbg('Migrating old directory structure')
         try:
-            os.makedirs(DATADIR)
-        except OSError:
-            pass
-        # Also make sure nothing else is mounted there
-        mount.umount(DATADIR)
+            migrate_structure(mdir)
+        except Exception as exc:
+            log_err('Migration failure: {0}'.format(str(exc)))
+        else:
+            log_dbg('Migration finished successfully.')
 
-        # Finally mount the data dir
-        mount.umount(devname)
-        ret = mount.mount(devname, DATADIR, fs=fs,
-                          opts=MOUNT_OPTS.get(fs, DEFAULT_MOUNT_OPTS))
-        if ret != 0:
-            raise RuntimeError('Failed to remount as data storage')
+    # Set up the external storage
+    log_info('Using {} as external storage'.format(devname))
+
+    # Also make sure nothing else is mounted there
+    mount.umount(EXT_STORAGE)
+
+    # Finally mount the data dir
+    mount.umount(devname)
+    ret = mount.mount(devname, EXT_STORAGE, fs=fs,
+                      opts=MOUNT_OPTS.get(fs, DEFAULT_MOUNT_OPTS))
+    if ret != 0:
+        raise RuntimeError('Failed to remount as data storage')
+
+    log_dbg('Switching active storage to {}'.format(EXT_STORAGE))
+    try:
+        switch_storage(EXT_STORAGE)
+    except RuntimeError:
+        log_err('Failed to switch storage path')
 
 
 def do_upgrade(mdir):
@@ -366,10 +303,16 @@ def handle_storage(devname, label, fs):
 
 def handle_storage_removal(dev, label):
     mdir = get_mountpoint(dev)
-    with services_stopped():
-        if mount.umount(mdir, force=True) != 0:
-            raise RuntimeError('Failed to unmount {} ({})'.format(
-                dev, label or 'no label'))
+    if mdir == EXT_STORAGE:
+        log_dbg('Switching storage to internal storage')
+        try:
+            switch_storage(MAIN_STORAGE)
+        except RuntimeError:
+            log_err('Failed to switch output path')
+    log_dbg('Unmounting {}'.format(mdir))
+    if mount.umount(mdir, force=True) != 0:
+        log_err('Failed to unmount {} ({})'.format(
+            dev, label or 'no label'))
 
 
 def main():

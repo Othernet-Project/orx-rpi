@@ -2,15 +2,30 @@
 
 PID_FILE=/var/run/ondd.pid
 CACHE_PATH=/mnt/data/cache
-OUTPUT_PATH=/mnt/data/downloads
+MAIN_STORAGE=/mnt/data/downloads
+EXT_STORAGE=/mnt/external
+
+has_external() {
+    mount | grep "$EXT_STORAGE" >/dev/null 2>&1
+}
 
 start() {
   [ -d /mnt/data/ondd ] || mkdir /mnt/data/ondd
   [ -d $CACHE_PATH ] || mkdir $CACHE_PATH
-  [ -d $OUTPUT_PATH ] || mkdir $OUTPUT_PATH
+  [ -d $MAIN_STORAGE ] || mkdir $MAIN_STORAGE
+  for storage in $MAIN_STORAGE $EXT_STORAGE; do
+      chgrp data $storage
+      chmod g+ws $storage
+  done
+
+  if has_external; then
+    output_path=$EXT_STORAGE
+  else
+    output_path=$MAIN_STORAGE
+  fi
 
   echo -n "Starting ondd: "
-  start-stop-daemon -S -q -p $PID_FILE --exec /usr/sbin/ondd -- -d --pid-file $PID_FILE -c $CACHE_PATH -o $OUTPUT_PATH
+  start-stop-daemon -S -q -p $PID_FILE --exec /usr/sbin/ondd -- -d --pid-file $PID_FILE -c $CACHE_PATH -o $output_path
   if [ $? ]; then
     echo "OK"
   else
