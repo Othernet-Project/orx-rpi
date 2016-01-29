@@ -3,7 +3,6 @@
 import os
 import sys
 import time
-import shutil
 import syslog
 from contextlib import contextmanager
 from subprocess import call
@@ -24,7 +23,6 @@ FSAL_SOCKET_PATH = '/var/run/fsal.ctrl'
 
 # Filesystems and mounting
 MOUNT_BASE = '/mnt'
-EXT_LABEL = 'ext_store'
 MAIN_STORAGE = '{}/data/downloads'.format(MOUNT_BASE)
 EXT_STORAGE = '{}/external'.format(MOUNT_BASE)
 CHECK_PROGS = {
@@ -38,24 +36,6 @@ MOUNT_OPTS = {
     'ntfs': 'windows_names,fmask=133,dmask=022,recover',
     'vfat': 'utf8',
 }
-
-# Platform
-PLATFORM = '/etc/platform'
-EXT_PLATFORM_FILE = '.platform'
-
-# Upgrade
-UPGRADE_FILE_EXT = '.pkg'
-UPGRADE_EXEC = '/usr/sbin/pkgtool'
-
-# Directory Structure Migration
-MIGRATE = (
-    ('library', 'legacy'),
-    ('downloads/files', ''),
-)
-CLEANUP = (
-    'librarian',
-    'downloads',
-)
 
 
 def log_err(msg):
@@ -90,73 +70,6 @@ def get_mount_opts(fs, extra_opts=None):
     return opts
 
 
-def get_upgrade_path(mdir):
-    return os.path.join(mdir, get_platform() + UPGRADE_FILE_EXT)
-
-
-def is_ext_storage(label):
-    if not label:
-        return False
-    return label.lower() == EXT_LABEL
-
-
-def is_upgrade(mdir):
-    upgrade_path = get_upgrade_path(mdir)
-    return os.path.isfile(upgrade_path)
-
-
-def get_platform():
-    with open(PLATFORM, 'r') as f:
-        platform = f.read()
-    return platform.strip()
-
-
-def get_ext_platform(mdir):
-    platform_file = os.path.join(mdir, EXT_PLATFORM_FILE)
-    if not os.path.exists(platform_file):
-        return ''
-    with open(platform_file, 'r') as f:
-        platform = f.read()
-    return platform.strip()
-
-
-def set_ext_platform(mdir):
-    platform_file = os.path.join(mdir, EXT_PLATFORM_FILE)
-    log_dbg('Writing platform file to external storage')
-    with open(platform_file, 'w') as f:
-        f.write(get_platform())
-
-
-def relocate_data(mdir):
-    for (src, dst) in MIGRATE:
-        src_path = os.path.join(mdir, src)
-        dst_path = os.path.join(mdir, dst)
-        if os.path.exists(src_path):
-            log_dbg('Copying {} into {}'.format(src_path, dst_path))
-            call([RM, dst_path])
-            call([MV, src_path, dst_path])
-        else:
-            log_dbg('Nothing to import in {}'.format(src_path))
-
-
-def delete_obsolete(mdir):
-    for item in CLEANUP:
-        path = os.path.join(mdir, item)
-        if os.path.exists(path):
-            log_dbg('Deleting {}'.format(path))
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-            else:
-                os.unlink(path)
-
-
-def migrate_structure(mdir):
-    # move data that needs to be migrated to the specified locations
-    relocate_data(mdir)
-    # delete obsolete data
-    delete_obsolete(mdir)
-
-
 def mpath(devname):
     devname = devname.split('/')[-1]
     return os.path.join(MOUNT_BASE, devname)
@@ -183,14 +96,6 @@ def autoumount(devname):
         sys.exit(1)
 
 
-def is_using_ext():
-    """
-    Whether we are already using external storage.
-    """
-    platform_file = os.path.join(EXT_STORAGE, EXT_PLATFORM_FILE)
-    return os.path.isfile(platform_file)
-
-
 def switch_storage(path):
     log_dbg('Switching ONDD output to {}'.format(path))
     ondd_client = ONDDClient(ONDD_SOCKET_PATH)
@@ -204,45 +109,6 @@ def switch_storage(path):
 
 
 def use_ext(devname, mdir, fs):
-    if is_using_ext():
-        # We are already using one storage device as external storage. We can't
-        # have more than one, sorry.
-        log_info('Already using external storage. Nothing to do.')
-        return
-
-    # External storage can be blank (never used) or contain a platform file
-    # that tells us it's been used before. Blank storage does not have the
-    # EXT_PLATFORM_FILE file on it.
-
-    this_platform = get_platform()
-    ext_platform = get_ext_platform(mdir)
-    first_use = ext_platform == ''
-
-    log_dbg('External storage platform is: {}'.format(
-        ext_platform or '(none)'))
-
-    if (not first_use) and (ext_platform != this_platform):
-        # This device has been used before, but on another system. We
-        # can't use it here.
-        log_err('This storage has been used on another platform {}. Nothing '
-                'to do.'.format(ext_platform))
-        return
-
-    log_dbg('Preparing for external storage use')
-
-    if first_use:
-        # This external storage needs to be marked
-        log_dbg('Initializing external storage')
-        set_ext_platform(mdir)
-        log_dbg('Migrating old directory structure')
-        try:
-            migrate_structure(mdir)
-        except Exception as exc:
-            log_err('Migration failure: {0}'.format(str(exc)))
-        else:
-            log_dbg('Migration finished successfully.')
-
-    # Set up the external storage
     log_info('Using {} as external storage'.format(devname))
 
     # Also make sure nothing else is mounted there
@@ -262,15 +128,7 @@ def use_ext(devname, mdir, fs):
         log_err('Failed to switch storage path')
 
 
-def do_upgrade(mdir):
-    upgrade_path = get_upgrade_path(mdir)
-    log_dbg('Executing system upgrade file {}'.format(upgrade_path))
-    cmd = [UPGRADE_EXEC, '-i', upgrade_path]
-    if call(cmd) != 0:
-        raise RuntimeError('Firmware upgrade unsuccessful')
-
-
-def handle_storage(devname, label, fs):
+def handle_storage(devname, fs):
     # First mount the partition
     mdir = get_mountpoint(devname)
     if not mdir:
@@ -284,24 +142,12 @@ def handle_storage(devname, label, fs):
 
     log_info('{} mounted at {}'.format(devname, mdir))
 
-    # Test for various handling options
-
-    if is_upgrade(mdir):
-        log_dbg('Processing system upgrade')
-        time.sleep(3)
-        do_upgrade(mdir)
-        return
-
-    if is_ext_storage(label):
-        log_dbg('Processing external storage')
-        time.sleep(3)
-        use_ext(devname, mdir, fs)
-    else:
-        log_dbg('{} unused, unmounting'.format(devname))
-        mount.umount(devname)
+    log_dbg('Processing external storage')
+    time.sleep(3)
+    use_ext(devname, mdir, fs)
 
 
-def handle_storage_removal(dev, label):
+def handle_storage_removal(dev):
     mdir = get_mountpoint(dev)
     if mdir == EXT_STORAGE:
         log_dbg('Switching storage to internal storage')
@@ -311,8 +157,7 @@ def handle_storage_removal(dev, label):
             log_err('Failed to switch output path')
     log_dbg('Unmounting {}'.format(mdir))
     if mount.umount(mdir, force=True) != 0:
-        log_err('Failed to unmount {} ({})'.format(
-            dev, label or 'no label'))
+        log_err('Failed to unmount {}'.format(dev))
 
 
 def main():
@@ -328,16 +173,15 @@ def main():
 
     syslog.openlog('hotplug.{}'.format(devname.split('/')[-1]))
 
-    label = os.environ.get('ID_FS_LABEL')
     fs = os.environ.get('ID_FS_TYPE')
     action = os.environ.get('ACTION')
 
     # Obtain device object and pass it to handler
     with autoumount(devname):
         if action == 'add':
-            handle_storage(devname, label, fs)
+            handle_storage(devname, fs)
         else:
-            handle_storage_removal(devname, label)
+            handle_storage_removal(devname)
 
 
 if __name__ == '__main__':
