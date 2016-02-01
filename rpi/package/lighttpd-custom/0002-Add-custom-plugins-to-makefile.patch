@@ -1,0 +1,14 @@
+--- lighttpd-1.4.37/src/Makefile.am	2016-01-29 17:47:10.396709854 +0100
++++ lighttpd-1.4.37/src/Makefile.am	2016-02-01 08:49:51.585103379 +0100
+@@ -172,6 +172,11 @@
+ mod_alias_la_LDFLAGS = -module -export-dynamic -avoid-version
+ mod_alias_la_LIBADD = $(common_libadd)
+ 
++lib_LTLIBRARIES += mod_multialias.la
++mod_multialias_la_SOURCES = mod_multialias.c
++mod_multialias_la_LDFLAGS = -module -export-dynamic -avoid-version
++mod_multialias_la_LIBADD = $(common_libadd)
++
+ lib_LTLIBRARIES += mod_userdir.la
+ mod_userdir_la_SOURCES = mod_userdir.c
+ mod_userdir_la_LDFLAGS = -module -export-dynamic -avoid-version
