@@ -32,6 +32,7 @@ comment "Monitoring and reporting"
 endmenu
 
 menu "Dependencies"
+    source "$BR2_EXTERNAL/package/lighttpd-custom/Config.in"
     source "$BR2_EXTERNAL/package/postgresql-95/Config.in"
     source "$BR2_EXTERNAL/package/python-bitarray/Config.in"
     source "$BR2_EXTERNAL/package/python-bottle-fdsend/Config.in"
