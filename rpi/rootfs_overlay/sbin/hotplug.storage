@@ -101,7 +101,7 @@ def switch_storage(path):
     ondd_client = ONDDClient(ONDD_SOCKET_PATH)
     response = ondd_client.set_output_path(path)
     if response != '204':
-        raise RuntimeError('Could not switch output path')
+        log_dbg('ONDD output switch failed. Not critical, continuing.')
     log_dbg('Refreshing FSAL index')
     fsal_client = FSAL(FSAL_SOCKET_PATH)
     fsal_client.refresh()
