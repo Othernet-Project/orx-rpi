@@ -17,7 +17,6 @@ PERSISTENT="/etc/shadow
 /etc/profile
 /etc/hostapd.conf
 /etc/dnsmasq.conf
-/etc/fsal-user.ini
 /etc/librarian-user.ini
 /etc/ondd.conf
 /etc/fstab
