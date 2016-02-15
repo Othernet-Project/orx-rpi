@@ -1,4 +1,4 @@
-B := rpi
+B := rpi2
 
 include $(B).mk
 
@@ -75,7 +75,7 @@ $(TARGET_MD5): $(TARGET_FILE)
 $(TARGET_FILE): $(IMAGE_FILE) $(TARGET_DIR)
 	-rm "$@"
 	zip -j "$@" "$<" $(IMAGES_DIR)/*.dtb $(IMAGES_DIR)/rpi-firmware/* \
-		-x cmdline.txt
+		-x \*cmdline.txt
 
 $(TAGET_DIR):
 	mkdir -p $@
