@@ -1,60 +1,45 @@
 B := rpi
-BOARD = $(B)
+
+include $(B).mk
+
+# Board-agnostic settings
+BUILDROOT = ./buildroot
+CONFIG = $(OUTPUT)/.config
 BOARD_DIR = ./$(BOARD)
 VERSION := $(shell cat $(BOARD_DIR)/version)
 PLATFORM := $(shell cat $(BOARD_DIR)/platform)
-IMAGE_FILE := images/$(PLATFORM)-$(VERSION).img
-IMAGE_FILE_GZ = $(IMAGE_FILE).gz
-IMAGE_FILE_ZIP = $(IMAGE_FILE).zip
-IMAGE_FILE_MD5SUM = $(IMAGE_FILE).md5
-UPDATE_ZIP = images/$(PLATFORM)-update-$(VERSION).zip
 
-SD_CARD := /dev/sdb
+# Build target
+TARGET_DIR := images
+TARGET_FILE_NAME=$(TARGET_NAME)-$(VERSION).$(TARGET_EXT)
+TARGET_MD5_NAME=$(TARGET_NAME)-$(VERSION).md5
+TARGET_FILE = $(TARGET_DIR)/$(TARGET_FILE_NAME)
+TARGET_MD5 = $(TARGET_DIR)/$(TARGET_MD5_NAME)
 
-BUILDROOT = ./buildroot
-OUTPUT_DIR = ../$(BOARD)/output
-OUTPUT = $(BOARD)/output
-CONFIG = $(OUTPUT)/.config
+# Build output files
+# Build output files
+OUTPUT = build/$(B)
+OUTPUT_DIR = ../$(OUTPUT)
 IMAGES_DIR = $(OUTPUT)/images
-KERNEL_IMAGE = $(IMAGES_DIR)/zImage
-TOOLS_DIR = tools
+IMAGE_FILE := $(IMAGES_DIR)/zImage
 
+# External dir
 EXTERNAL = .$(BOARD_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
 
-.PHONY: default version build sdcard gzimage zipimage update image menuconfig linux-menuconfig busybox-menuconfig saveconfig config help clean-build clean
+.PHONY: default version build image menuconfig linux-menuconfig \
+	busybox-menuconfig saveconfig config help clean-build clean
 
-default: build
+default: md5
 
 version:
 	@echo v$(VERSION)
 
-build: $(KERNEL_IMAGE)
+build: $(TARGET_MD5)
 
-sdcard: $(SD_CARD) $(IMAGE_FILE)
-	@read -p "Press ENTER to write image to $<..."
-	@cat $(IMAGE_FILE) | dd of=$< bs=1M
-	@sync
+md5: $(TARGET_MD5)
 
-gzimage: $(IMAGE_FILE)
-	gzip $(IMAGE_FILE)
-	md5sum $(IMAGE_FILE_GZ) | sed 's|images/||' > $(IMAGE_FILE_GZ).md5
-
-zipimage: $(IMAGE_FILE)
-	zip -j $(IMAGE_FILE_ZIP) $<
-	md5sum $(IMAGE_FILE_ZIP) | sed 's|images/||' > $(IMAGE_FILE_ZIP).md5
-
-update: $(KERNEL_IMAGE)
-	zip -j $(UPDATE_ZIP) $<
-	md5sum $(UPDATE_ZIP) | sed 's|images/||' > $(UPDATE_ZIP).md5
-
-image: $(IMAGE_FILE)
-
-$(IMAGE_FILE): $(KERNEL_IMAGE)
-	@$(TOOLS_DIR)/mkimage.sh "$@" "$<"
-
-$(KERNEL_IMAGE): $(CONFIG)
-	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
+image: $(TARGET_FIE)
 
 menuconfig: $(CONFIG)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) menuconfig
@@ -72,9 +57,6 @@ saveconfig: $(CONFIG)
 
 config: $(CONFIG)
 
-$(CONFIG):
-	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) orx_defconfig
-
 help:
 	@cat HELP
 
@@ -84,6 +66,22 @@ clean-build:
 
 clean: $(OUTPUT)
 	-rm -rf $(OUTPUT)
+
+$(TARGET_MD5): $(TARGET_FILE)
+	cd $(TARGET_DIR); md5sum "$<" > "$@"
+
+$(TARGET_FILE): $(IMAGE_FILE) $(TARGET_DIR)
+	zip -j "$@" "$<"
+	zip -j "$@" "$(IMAGES_DIR)/config.txt"
+
+$(TAGET_DIR):
+	mkdir -p $@
+
+$(IMAGE_FILE): $(CONFIG)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
+
+$(CONFIG):
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) orx_defconfig
 
 .DEFAULT:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $@
