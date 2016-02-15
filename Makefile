@@ -73,7 +73,9 @@ $(TARGET_MD5): $(TARGET_FILE)
 	cd $(TARGET_DIR); md5sum "$(TARGET_FILE_NAME)" > "$(TARGET_MD5_NAME)"
 
 $(TARGET_FILE): $(IMAGE_FILE) $(TARGET_DIR)
-	zip -j "$@" "$<" $(IMAGES_DIR)/*.dtb $(IMAGES_DIR)/rpi-firmware/*
+	-rm "$@"
+	zip -j "$@" "$<" $(IMAGES_DIR)/*.dtb $(IMAGES_DIR)/rpi-firmware/* \
+		-x cmdline.txt
 
 $(TAGET_DIR):
 	mkdir -p $@
