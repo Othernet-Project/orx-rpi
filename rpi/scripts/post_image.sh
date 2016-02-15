@@ -1,6 +1,7 @@
 #!/bin/sh
 
-SOURCE_CFGFILE=$BR2_EXTERNAL/configs/config.txt
-CFGFILE=$BINARIES_DIR/rpi-firmware/config.txt
+# Copy the config.txt file
+cp $BR2_EXTERNAL/configs/config.txt $BINARIES_DIR/rpi-firmware/
 
-cp $SOURCE_CFGFILE $CFGFILE
+# Blank out the kernel command line
+echo '' > $BINARIES_DIR/rpi-firmware/cmdline.txt
