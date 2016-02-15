@@ -1,1 +1,1 @@
-ENV{ID_FS_USAGE}=="filesystem", KERNEL!="mmcblk*", RUN+="/sbin/hotplug.storage"
+ENV{ID_FS_USAGE}=="filesystem", KERNEL!="mmcblk*", KERNEL!="loop*", RUN+="/sbin/hotplug.storage"
