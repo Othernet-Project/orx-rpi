@@ -1,0 +1,86 @@
+#!/bin/sh
+# vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab :
+
+MTD=/dev/$(grep \"data\" /proc/mtd | cut -d : -f 1)
+
+# Old stuff
+BASE=/mnt/data/downloads
+FILES=${BASE}/files
+CONTENT=${BASE}/content
+CACHE=${BASE}/.cache
+
+ismounted() {
+  mdir=$1
+  cat /proc/mounts | cut -f1 -d' ' | grep ^${mdir}$ 1> /dev/null
+}
+
+mkdatavol() {
+  path=$1
+  size=$2
+  dd if=/dev/zero of=$path bs=1024 count=$size
+  mkfs.ext4 $path
+}
+
+mount_start() {
+  if ! ismounted /mnt/sdcard; then
+    /bin/mkdir -p /mnt/sdcard
+    /bin/mount /dev/mmcblk0p1 /mnt/sdcard
+  fi
+  
+  if ! [ -e /mnt/sdcard/data.img ]; then
+    mkdatavol /mnt/sdcard/data.img 500000
+  fi
+
+  if ! [ -e /mnt/sdcard/persist.img ]; then
+    mkdatavol /mnt/sdcard/persist.img 100000
+  fi
+
+  if ! ismounted /mnt/persist; then
+    /sbin/losetup /dev/loop1 /mnt/sdcard/persist.img
+    /bin/mount -t ext4 /dev/loop1 /mnt/persist
+  fi
+
+  # Mount the data volume
+  if ! ismounted /mnt/data ; then
+    /sbin/losetup /dev/loop2 /mnt/sdcard/data.img
+    /bin/mount -t ext4 /dev/loop2 /mnt/data
+  fi
+
+  # Create directories
+  /bin/mkdir -p /mnt/data/librarian
+  /bin/mkdir -p /mnt/data/fsal
+  /bin/mkdir -p /mnt/data/log
+
+  # Create the download directory and symlink it
+  /bin/mkdir -p /mnt/sdcard/DOWNLOADS
+  /bin/ln -s /mnt/sdcard/DOWNLOADS /mnt/data/downloads
+}
+
+mount_stop() {
+  if grep /mnt/data /proc/mounts 1> /dev/null ; then
+    /bin/echo "Unmounting /mnt/data"
+    /bin/umount -f /mnt/data
+  fi
+  if grep /mnt/persist /proc/mounts 1> /dev/null ; then
+    /bin/echo "Unmounting /mnt/persist"
+    /bin/umount -f /mnt/persist
+  fi
+
+  if [ -c /dev/ubi0 ]; then
+    /usr/sbin/ubidetach -p $MTD
+  fi
+}
+
+case "$1" in
+  start)
+    mount_start
+    ;;
+  stop)
+    mount_stop
+    ;;
+  restart|reload)
+    ;;
+  *)
+    echo -n "usage: $0 {start|stop|restart|reload}"
+    ;;
+esac

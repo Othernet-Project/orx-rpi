@@ -1,0 +1,58 @@
+#!/bin/sh
+
+CONF_DIR=/mnt/persist/sysconf
+PERSISTENT="/etc/shadow
+/etc/group
+/etc/profile
+/etc/hostapd.conf
+/etc/dnsmasq.conf
+/etc/sudoers
+/etc/dropbear
+/etc/network
+/etc/librarian-users.ini"
+
+
+relpath() {
+    path=$1
+    par=$2
+    echo ${path##$par/}
+}
+
+persist() {
+    for path in $PERSISTENT
+    do
+        relp=$(relpath "$path" /etc)
+        target="$CONF_DIR/$relp"
+        target_dir=$(dirname "$target")
+        if ! [ -e "$target" ]
+        then
+            mkdir -p "$target_dir"
+            # If it's a regular file, we copy it as is
+            if [ -f "$c" ]
+            then
+                cp -a "$path" "$target"
+            else
+                cp -R "$path" "$target"
+            fi
+        fi
+        rm -rf "$path"
+        ln -s "$target" "$path"
+    done
+    # Make sure there's no shadow+ file in the persistent storage as this can 
+    # sometimes happen when power is lost right after setting a password and 
+    # subsequently disable setting passwords.
+    rm "$CONF_DIR/shadow+"
+}
+
+case "$1" in
+    start)
+        mkdir -p $CONF_DIR
+        echo -n "Creating persistent configuration"
+        persist && echo "OK" || (echo "FAIL"; exit 1)
+        ;;
+    *)
+        echo "Usage: $0 {start}"
+        ;;
+esac
+
+exit 0
