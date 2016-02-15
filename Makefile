@@ -37,6 +37,8 @@ version:
 
 build: $(TARGET_MD5)
 
+rebuild: clean-build build
+
 md5: $(TARGET_MD5)
 
 image: $(TARGET_FIE)
@@ -61,7 +63,7 @@ help:
 	@cat HELP
 
 clean-build:
-	@-rm $(KERNEL_IMAGE)
+	@-rm $(IMAGE_FILE)
 	@-rm $(IMAGES_DIR)/rootfs*
 
 clean: $(OUTPUT)
