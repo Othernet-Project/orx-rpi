@@ -6,21 +6,7 @@ version:
     Print build version
 
 build:
-    Create the kernel image with built-in initramfs
-
-image:*
-    Create SD card image file
-
-gzimage:
-    Create gzipped SD card image file and MD5 checksum
-    (This target should be called after image target)
-
-zipimage:
-    Create zipped SD card image file and MD5 checksum
-    (This target should be called after image target but before gzimage)
-
-sdcard:*
-    Copy image to SD card using dd
+    Create the zip file containing the SD card contents
 
 menuconfig:
     Buildroot configuration
