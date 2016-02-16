@@ -5,4 +5,4 @@ TARGET_NAME := ORxPi
 TARGET_DIR := images
 TARGET_EXT := zip
 
-PLATFORM_FILE = platform_rpi
+PLATFORM_FILE = rpi_platform
