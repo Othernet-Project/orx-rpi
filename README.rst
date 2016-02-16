@@ -62,14 +62,7 @@ To build the rootfs, run make with default target::
 
     $ make
 
-Once build completes, you can build the image file::
-
-    $ sudo make image
- 
-The latter will execute the script `rpi/tools/mkimage.sh`. This script runs
-several commands that require root privileges, so the target is separated.
-
-Once build completes, you will find the image file in the ``images`` directory.
+Once build completes, you will find a zip file in the ``images`` directory.
 
 To get more help on available make targets, type::
 
@@ -84,14 +77,8 @@ the ``rpi2`` overlay, use the B environment variable::
 Copying the image file to SD card
 =================================
 
-To copy the image file to an SD card, use the following command::
-
-    $ sudo make sdcard
-
-By default, the above command uses ``/dev/sdb`` as SD card drive. To use
-another drive, use the SD_CARD environment variable::
-
-    $ sudo make SD_CARD=/dev/sdX sdcard
+The build generates a zip file in the ``images``. Simply unpack it to a blank
+SD card.
 
 Rebuilding after changes to rootfs overlay
 ==========================================
@@ -99,12 +86,7 @@ Rebuilding after changes to rootfs overlay
 When modifying files in the rootfs overlay, use the following commands to
 rebuild::
 
-    $ make clean-build
-    $ make
-    $ sudo make image
-
-The `clean-build` target will remove rootfs images and compressed kernel image
-and restart the build using packages that are already compiled.
+    $ make rebuild
 
 System username and password
 ============================
@@ -116,29 +98,29 @@ username  outernet
 password  outernet
 ========  ========
 
-At this moment, these credentials cannot be changed. This may change in future
-releases.
+The password can be changed using the ``passwd`` command.
 
 About the generated images
 ==========================
 
-The image files generated using this build system can be downloaded from
-`archive.outernet.is/images/`_. The image file contains a single FAT32
-partition which contains the files necessary to boot the system.
+The gnerated zip file contains:
 
-The root filesystem is part of the kernel image (``zImage`` file) and will
-create all other necessary partitions on first boot. Three new partitions are
-created:
+- kernel image (``zImage``)
+- DTB files
+- bootloader configuration file
+- firmware files
 
-- ``/dev/mmcblk0p2`` mounted on ``/opt/orx`` for persistent configuration
-- ``/dev/mmcblk0p3`` mounted on ``/var/log`` for persistent system logs
-- ``/dev/mmcblk0p4`` mounted on ``/mnt/data`` for storing downloaded content
+The root filesystem is part of the kernel image (``zImage`` file). During the
+first boot, two additional files are created:
 
-The first partition, together with second and third, take up approximately
-140MB of the SD card, while the last partition will use the remaining space.
+- data.img - disk image containing databases and application logs
+- persist.img - disk image containing persistent configuration
 
-When updating the system, it is enough to copy the new ``zImage`` file to the
-first partition instead of creating a new card.
+These two files can be loop-mounted on a Linux computer, and they are in ext4
+format.
+
+One folder is also created on the card: 'DOWNLOADS'. This folder contains the
+files downloaded from Outernet.
 
 Reporting bugs
 ==============
