@@ -6,8 +6,9 @@ include $(B).mk
 BUILDROOT = ./buildroot
 CONFIG = $(OUTPUT)/.config
 BOARD_DIR = ./$(BOARD)
-VERSION := $(shell cat $(BOARD_DIR)/version)
-PLATFORM := $(shell cat $(BOARD_DIR)/platform)
+VERSION_FILE = version
+VERSION := $(shell cat $(BOARD_DIR)/$(VERSION_FILE))
+PLATFORM := $(shell cat $(BOARD_DIR)/$(PLATFORM_FILE))
 
 # Build target
 TARGET_DIR := images
@@ -81,7 +82,8 @@ $(TAGET_DIR):
 	mkdir -p $@
 
 $(IMAGE_FILE): $(CONFIG)
-	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
+	VERSION_FILE=$(VERSION_FILE) PLATFORM_FILE=$(PLATFORM_FILE) @make \
+		-C $(BUILDROOT) O=$(OUTPUT_DIR)
 
 $(CONFIG):
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) orx_defconfig
