@@ -1,4 +1,4 @@
-BOARD = rpi
+BOARD = sdcard
 DEFCONFIG = rpi2_defconfig
 
 TARGET_NAME := ORxPi2
