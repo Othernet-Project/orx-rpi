@@ -51,7 +51,8 @@ Crosstool-NG-based toolchain if you don't need it.
 Building
 ========
 
-To build the rootfs, run make with default target::
+To build the files necessary to boot the Outernet receiver software, run 
+``make`` with default target::
 
     $ make
 
@@ -61,11 +62,11 @@ To get more help on available make targets, type::
 
     $ make help
 
-By default, all make commands will use the overlay in the ``rpi`` directory.
-This creates an image for Raspberry Pi v1. To build for Raspberry Pi v2 using 
-the ``rpi2`` overlay, use the B environment variable::
+By default, all make commands will use the overlay in the ``rpi2`` directory.
+This creates an image for Raspberry Pi 2. To build for Raspberry Pi 1 using 
+the ``rpi`` overlay, use the B environment variable::
 
-    $ make B=rpi2
+    $ make B=rpi
 
 Copying the image file to SD card
 =================================
