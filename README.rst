@@ -36,13 +36,6 @@ The following should be installed on the build box:
 - hg (mercurial)
 - libstdc++6 32-bit (on 64-bit systems)
 
-Also required for creating the SD card image:
-
-- e2fsprogs
-- dosfstools
-- parted
-- qemu
-
 Cloning the repository
 ======================
 ::
