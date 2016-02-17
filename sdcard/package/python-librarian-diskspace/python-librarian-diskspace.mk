@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_LIBRARIAN_DISKSPACE_VERSION = 9202b32012e0be59b0f26ce5bba870a834778f66
+PYTHON_LIBRARIAN_DISKSPACE_VERSION = e26c7c4cbfa3f93d8c3b097d135c7c560fea82b0
 PYTHON_LIBRARIAN_DISKSPACE_SOURCE = $(PYTHON_LIBRARIAN_DISKSPACE_VERSION).tar.gz
 PYTHON_LIBRARIAN_DISKSPACE_SITE = https://github.com/Outernet-Project/librarian-diskspace/archive
 PYTHON_LIBRARIAN_DISKSPACE_LICENSE = GPL
