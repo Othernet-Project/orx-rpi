@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPTDIR=$(dirname $0)
-PKGDIR=$SCRIPTDIR/../rpi/package
+PKGDIR=$SCRIPTDIR/../sdcard/package
 
 pkgname=$1
 version=$2
