@@ -1,1 +1,39 @@
-../bin/hotplug.wlan
+#!/bin/sh
+
+LOG="logger -t hotplug.wlan"
+INIT=/etc/init.d
+DNSM=$INIT/S80dnsmasq
+HAPD=$INIT/S81hostapd
+
+# Handles udev event for wlan0, and /etc/interfaces hotplug events
+
+case "$1" in
+    up)
+        # Ignore errors or otherwise the network interface may be left in 
+        # inconsistent state.
+        $LOG "setting up networking services for wlan0"
+        $DNSM restart || true
+        $HAPD restart || true
+        exit 0
+        ;;
+    down)
+        # Ignore errors or otherwise the network interface may be left in 
+        # inconsistent state.
+        $LOG "bringing down networking servies for wlan0"
+        $DNSM stop || true
+        $HAPD stop || true
+        exit 0
+        ;;
+esac
+        
+
+case "$ACTION" in
+    add)
+        $LOG "wlan0 added, but we are letting interfaces file control hotplug"
+        ifup wlan0 || true
+        ;;
+    remove)
+        $LOG "wlan0 removed, deconfiguring interface"
+        ifdown wlan0 || $LOG "Failed to deconfigure interface"
+        ;;
+esac
