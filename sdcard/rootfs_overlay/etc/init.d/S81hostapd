@@ -19,7 +19,11 @@ case "$1" in
         start-stop-daemon -K -q -p $HOSTAPD_PID -x $DAEMON
         [ $? = 0 ] && echo "OK" || echo "FAIL"
         ;;
-    restart|reload)
+    reload)
+        echo -n "Reloading hostapd configuration: "
+        kill -s SIGHUP $(cat $HOSTAPD_PID) 2>/dev/null
+        [ $? = 0 ] && echo "OK" || echo "FAIL"
+    restart)
         $0 stop
         sleep 2
         $0 start
