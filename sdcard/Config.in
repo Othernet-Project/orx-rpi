@@ -60,10 +60,6 @@ menu "Dependencies"
     source "$BR2_EXTERNAL/package/python-zippie/Config.in"
 endmenu
 
-menu "Drivers"
-    source "$BR2_EXTERNAL/package/rt8192cu/Config.in"
-endmenu
-
 menu "Development"
 comment "The packages in this section are only required for building binaries "
 comment "for code that is closed-source. Do not enable them for normal builds."
