@@ -1,0 +1,25 @@
+#!/bin/sh
+
+PERSIST=/mnt/persist
+SYSCONF=$PERSIST/sysconf
+MKDIR=/bin/mkdir
+CHMOD=/bin/chmod
+MV=/bin/mv
+RM=/bin/rm
+ECHO=/bin/echo
+
+backup() {
+    fpath=$1
+    if [ -e $fpath ]; then
+        $MV $fpath ${fpath}.backup && echo "$fpath => ${fpath}.backup"
+    else
+        $ECHO "$fpath not found, nothing to back up"
+    fi
+}
+
+if [ -d /mnt/data/cache ]; then
+    $ECHO "Moving existing cache"
+    $MKDIR -p /mnt/sdcard/CACHE
+    $MV /mnt/data/cache/* /mnt/sdcard/CACHE
+    $ECHO "Finished moving existing cache"
+fi

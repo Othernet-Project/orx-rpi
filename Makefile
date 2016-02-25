@@ -76,7 +76,7 @@ $(TARGET_MD5): $(TARGET_FILE)
 $(TARGET_FILE): $(IMAGE_FILE) $(TARGET_DIR)
 	-rm "$@"
 	zip -j "$@" "$<" $(IMAGES_DIR)/*.dtb $(IMAGES_DIR)/rpi-firmware/* \
-		-x \*cmdline.txt
+		$(IMAGES_DIR)/post_install -x \*cmdline.txt
 
 $(TAGET_DIR):
 	mkdir -p $@
