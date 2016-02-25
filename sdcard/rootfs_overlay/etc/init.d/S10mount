@@ -58,6 +58,12 @@ mount_start() {
   # Create the cache directory
   /bin/mkdir -p /mnt/sdcard/DOWNLOAD_CACHE
   /bin/ln -s /mnt/sdcard/DOWNLOAD_CACHE /mnt/data/cache
+
+  # Execute post_install script if there is one
+  if [ -f /mnt/sdcard/post_install ]; then
+    /bin/sh /mnt/sdcard/post_install > /mnt/sdcard/post_install.log 2>&1
+    rm -f /mnt/sdcard/post_install
+  fi
 }
 
 mount_stop() {
