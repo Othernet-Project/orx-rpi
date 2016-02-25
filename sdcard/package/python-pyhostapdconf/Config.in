@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_PYHOSTAPDCONF
+	bool "python-pyhostapdconf"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  Hostapd configuration parser/generator with helper functions for common
+	  setups
+
+	  https://github.com/Outernet-Project/pyhostapdconf
