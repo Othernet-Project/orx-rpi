@@ -54,6 +54,10 @@ mount_start() {
   # Create the download directory and symlink it
   /bin/mkdir -p /mnt/sdcard/DOWNLOADS
   /bin/ln -s /mnt/sdcard/DOWNLOADS /mnt/data/downloads
+
+  # Create the cache directory
+  /bin/mkdir -p /mnt/sdcard/DOWNLOAD_CACHE
+  /bin/ln -s /mnt/sdcard/DOWNLOAD_CACHE /mnt/data/cache
 }
 
 mount_stop() {
