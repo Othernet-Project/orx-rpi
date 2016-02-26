@@ -19,7 +19,7 @@ backup() {
 
 if [ -d /mnt/data/cache ]; then
     $ECHO "Moving existing cache"
-    $MKDIR -p /mnt/sdcard/CACHE
     $MV /mnt/data/cache/* /mnt/sdcard/CACHE
+    $RM -rf /mnt/data/cache
     $ECHO "Finished moving existing cache"
 fi

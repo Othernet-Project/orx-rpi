@@ -62,6 +62,7 @@ mount_start() {
   /bin/ln -s /mnt/sdcard/DOWNLOADS /mnt/data/downloads
 
   # Create the cache directory
+  [ -e /mnt/data/cache ] && /bin/rm -rf /mnt/data/cache
   /bin/mkdir -p /mnt/sdcard/DOWNLOAD_CACHE
   /bin/ln -s /mnt/sdcard/DOWNLOAD_CACHE /mnt/data/cache
 }
