@@ -1,0 +1,12 @@
+diff --git a/Makefile b/Makefile
+index 9a9d70f..30f5dd8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -47,7 +47,6 @@ clean:
+ install: $(TARGET)
+ 	@mkdir -p $(INSTALL_PREFIX)/usr/sbin $(INSTALL_PREFIX)/etc/init.d
+ 	install -m 0755 $(TARGET) $(INSTALL_PREFIX)/usr/sbin/
+-	install -m 0755 S80ondd $(INSTALL_PREFIX)/etc/init.d/
+ 
+ ifneq ($(MAKECMDGOALS),clean)
+     -include $(DEPS)
