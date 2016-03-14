@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_GREENTASKS
+	bool "python-greentasks"
+	depends on BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_PYTHON_GEVENT
+	help
+	  A very simplistic task scheduler built around gevent.
+
+	  https://github.com/Outernet-Project/greentasks/
