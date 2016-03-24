@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_CONFLOADER
+	bool "python-confloader"
+	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	help
+	  Python module for loading .ini configuration files with extra bells and 
+	  whistles
+
+	  http://confloader.readthedocs.org/
