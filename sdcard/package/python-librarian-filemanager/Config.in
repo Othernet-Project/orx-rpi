@@ -1,9 +1,9 @@
 config BR2_PACKAGE_PYTHON_LIBRARIAN_FILEMANAGER
 	bool "python-librarian-filemanager"
 	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
-    select BR2_PACKAGE_PYTHON_LIBRARIAN_CONTENT
+	select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
+	select BR2_PACKAGE_PYTHON_LIBRARIAN_CONTENT
 	help
-      Librarian file management app 
+	  Librarian file management app 
 
 	  https://github.com/Outernet-Project/librarian-filemanager/
