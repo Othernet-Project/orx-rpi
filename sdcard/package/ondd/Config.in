@@ -1,7 +1,0 @@
-config BR2_PACKAGE_ONDD
-	bool "ondd"
-	select BR2_PACKAGE_OPENSSL
-	help
-	  Outernet Data Delivery agent
-	  
-	  http://outernet.is/

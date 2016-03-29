@@ -1,9 +1,0 @@
-config BR2_PACKAGE_PYTHON_DATEUTIL
-	bool "python-dateutil"
-	depends on BR2_PACKAGE_PYTHON
-	select BR2_PACKAGE_PYTHON_SIX
-	help
-	  The dateutil module provides powerful extensions to the datetime
-	  module available in the Python standard library.
-
-	  https://dateutil.readthedocs.org/

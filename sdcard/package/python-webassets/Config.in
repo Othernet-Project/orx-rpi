@@ -1,8 +1,0 @@
-config BR2_PACKAGE_PYTHON_WEBASSETS
-	bool "python-webassets"
-	help
-        Merges, minifies and compresses Javascript and CSS files, supporting a
-        variety of different filters, including YUI, jsmin, jspacker or CSS
-        tidy. Also supports URL rewriting in CSS files.
-
-        http://github.com/miracle2k/webassets/

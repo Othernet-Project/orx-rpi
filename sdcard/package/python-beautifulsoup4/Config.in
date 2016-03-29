@@ -1,8 +1,0 @@
-config BR2_PACKAGE_PYTHON_BEAUTIFULSOUP4
-	bool "python-beautifulsoup4"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-	help
-	  Beautiful Soup sits atop an HTML or XML parser, providing Pythonic idioms
-	  for iterating, searching, and modifying the parse tree.
-
-	  http://www.crummy.com/software/BeautifulSoup/bs4/

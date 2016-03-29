@@ -1,8 +1,0 @@
-config BR2_PACKAGE_PYTHON_ONDD_IPC
-	bool "python-ondd-ipc"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-	select BR2_PYTHON_BOTTLE
-	help
-	  ONDD IPC library
-
-	  https://github.com/Outernet-Project/ondd-ipc/

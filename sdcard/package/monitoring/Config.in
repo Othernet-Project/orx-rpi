@@ -1,9 +1,0 @@
-config BR2_PACKAGE_MONITORING
-	bool "monitoring"
-	depends on BR2_PACKAGE_PYTHON
-	select BR2_PACKAGE_PYTHON_BITARRAY
-	help
-	  Client-side script for sending Outernet signal monitoring data to a
-	  central server.
-	  
-	  https://github.com/Outernet-Project/monitoring

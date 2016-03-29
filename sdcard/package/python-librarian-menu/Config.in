@@ -1,8 +1,0 @@
-config BR2_PACKAGE_PYTHON_LIBRARIAN_MENU
-	bool "python-librarian-menu"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
-	help
-      Librarian menu system
-
-	  https://github.com/Outernet-Project/librarian-menu/

@@ -1,7 +1,0 @@
-config BR2_PACKAGE_PYTHON_CSSMIN
-	bool "python-cssmin"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-	help
-	  A Python port of the YUI CSS compression algorithm.
-	  
-	  http://github.com/zacharyvoase/cssmin
