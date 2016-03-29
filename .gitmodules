@@ -1,3 +1,6 @@
 [submodule "buildroot"]
 	path = buildroot
 	url = git://git.buildroot.net/buildroot
+[submodule "sdcard/package"]
+	path = sdcard/package
+	url = https://github.com/Outernet-Project/buildroot-packages.git
