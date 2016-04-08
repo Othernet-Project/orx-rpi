@@ -1,8 +1,0 @@
-config BR2_PACKAGE_PYTHON_PYUDEV
-	bool "python-pyudev"
-	depends on BR2_PACKAGE_PYTHON
-	select BR2_PACKAGE_EUDEV
-	help
-        pyudev is a LGPL licensed, pure Python binding for libudev, the device
-        and hardware management and information library for Linux.
-

@@ -1,0 +1,12 @@
+--- a/hostapd/defconfig	2015-09-27 21:02:05.000000000 +0200
++++ b/hostapd/defconfig	2016-02-20 16:36:48.867944229 +0100
+@@ -18,6 +18,9 @@
+ # Driver interface for drivers using the nl80211 kernel interface
+ CONFIG_DRIVER_NL80211=y
+ 
++# Driver interface for rtl871xdrv driver
++CONFIG_DRIVER_RTW=y
++
+ # driver_nl80211.c requires libnl. If you are compiling it yourself
+ # you may need to point hostapd to your version of libnl.
+ #

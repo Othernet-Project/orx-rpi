@@ -1,7 +1,0 @@
-config BR2_PACKAGE_PYTHON_SQLIZE_PG
-	bool "python-sqlize-pg"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-	help
-	  Fast SQL query builder for Python
-
-	  https://github.com/Outernet-project/sqlize

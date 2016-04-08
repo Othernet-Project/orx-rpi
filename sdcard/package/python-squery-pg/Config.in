@@ -1,7 +1,0 @@
-config BR2_PACKAGE_PYTHON_SQUERY_PG
-	bool "python-squery-pg"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-	help
-	  Ligthweight SQL database management library
-
-	  https://github.com/Outernet-project/squery-pg

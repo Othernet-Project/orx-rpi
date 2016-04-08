@@ -1,9 +1,0 @@
-config BR2_PACKAGE_PYTHON_LIBRARIAN_OPENER_VIDEO
-	bool "python-librarian-opener-video"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
-    select BR2_PACKAGE_PYTHON_LIBRARIAN_CORE
-    select BR2_PACKAGE_PYTHON_LIBRARIAN_FILEMANAGER
-	help
-      Librarian opener for video content
-
-	  https://github.com/Outernet-Project/librarian-opener-video/
