@@ -67,7 +67,7 @@ clean-build:
 	@-rm $(IMAGE_FILE)
 	@-rm $(IMAGES_DIR)/rootfs*
 
-clean: $(OUTPUT)
+clean:
 	-rm -rf $(OUTPUT)
 
 $(TARGET_MD5): $(TARGET_FILE)
